@@ -26,18 +26,17 @@ You can tell Config Server to use your local Git repository by using `local` Spr
 `GIT_REPO` environment variable, for example:
 `-Dspring.profiles.active=local -DGIT_REPO=/projects/spring-petclinic-microservices-config`
 
-## Starting services locally with docker-compose
-In order to start entire infrastructure using Docker, you have to build images by executing `./mvnw clean install -PbuildDocker` 
-from a project root. Once images are ready, you can start them with a single command
-`docker-compose up`. Containers startup order is coordinated with [`dockerize` script](https://github.com/jwilder/dockerize). 
-After starting services it takes a while for API Gateway to be in sync with service registry,
-so don't be scared of initial Spring Cloud Gateway timeouts. You can track services availability using Eureka dashboard
-available by default at http://localhost:8761.
+## Starting services locally with KIND  
+This will setup a [Kubernetes IN Docker](https://github.com/kubernetes-sigs/kind) cluster named petclinic by default.
 
-The `master` branch uses an  Alpine linux  with JRE 8 as Docker base. You will find a Java 11 version in the `release/java11` branch.
+First, [install Kind](https://github.com/kubernetes-sigs/kind#installation-and-usage).
 
-*NOTE: Under MacOSX or Windows, make sure that the Docker VM has enough memory to run the microservices. The default settings
-are usually not enough and make the `docker-compose up` painfully slow.*
+next we will create the Petclinic Kind cluster. Run `make kind-test-cluster` to create the `petclinic` Kubernetes cluster.  
+This will also setup helm and a kubeconfig, the kubeconfig location can be found using the following command `kind get kubeconfig-path --name=petclinic`
+ assuming you're using the default `KIND_PROFILE`.  
+You can verify your new cluster information by running: `KUBECONFIG=$(kind get kubeconfig-path --name=petclinic) kubectl cluster-info`  
+
+Enter `kubectl get pods` and press enter. You should see that you have no resources currently, but otherwise see no errors.
 
 ## Understanding the Spring Petclinic application
 
@@ -51,7 +50,7 @@ You can then access petclinic here: http://localhost:8080/
 
 
 **Architecture diagram of the Spring Petclinic Microservices**
-
+##### TODO: Update to represent k8s architecture 
 ![Spring Petclinic Microservices architecture](docs/microservices-architecture-diagram.jpg)
 
 
@@ -127,10 +126,7 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 
 | Spring Cloud components         | Resources  |
 |---------------------------------|------------|
-| Configuration server            | [Config server properties](spring-petclinic-config-server/src/main/resources/application.yml) and [Configuration repository] |
-| Service Discovery               | [Eureka server](spring-petclinic-discovery-server) and [Service discovery client](spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/VetsServiceApplication.java) |
 | API Gateway                     | [Spring Cloud Gateway starter](spring-petclinic-api-gateway/pom.xml) and [Routing configuration](/spring-petclinic-api-gateway/src/main/resources/application.yml) |
-| Docker Compose                  | [Spring Boot with Docker guide](https://spring.io/guides/gs/spring-boot-docker/) and [docker-compose file](docker-compose.yml) |
 | Circuit Breaker                 | [Hystrix fallback method](spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/application/VisitsServiceClient.java)  |
 | Grafana / Prometheus Monitoring | [Micrometer implementation](https://micrometer.io/), [Spring Boot Actuator Production Ready Metrics] |
 
@@ -147,7 +143,7 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 The Spring Petclinic master branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
 GitHub org is the "canonical" implementation, currently based on Spring Boot and Thymeleaf.
 
-This [spring-petclinic-microservices](https://github.com/spring-petclinic/spring-petclinic-microservices/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
+This [spring-petclinic-kubernetes](https://github.com/spring-petclinic/spring-petclinic-kubernetes/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
 hosted in a special GitHub org: [spring-petclinic](https://github.com/spring-petclinic).
 If you have a special interest in a different technology stack
 that could be used to implement the Pet Clinic then please join the community there.
@@ -155,10 +151,9 @@ that could be used to implement the Pet Clinic then please join the community th
 
 # Contributing
 
-The [issue tracker](https://github.com/spring-petclinic/spring-petclinic-microservices/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
+The [issue tracker](https://github.com/spring-petclinic/spring-petclinic-kubernetes/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
 
 For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <http://editorconfig.org>.
 
 
-[Configuration repository]: https://github.com/spring-petclinic/spring-petclinic-microservices-config
 [Spring Boot Actuator Production Ready Metrics]: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html
