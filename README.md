@@ -27,6 +27,7 @@ You can tell Config Server to use your local Git repository by using `local` Spr
 `-Dspring.profiles.active=local -DGIT_REPO=/projects/spring-petclinic-microservices-config`
 
 ## Starting services locally with KIND  
+### Starting KIND
 This will setup a [Kubernetes IN Docker](https://github.com/kubernetes-sigs/kind) cluster named petclinic by default.
 
 First, [install Kind](https://github.com/kubernetes-sigs/kind#installation-and-usage).
@@ -37,6 +38,9 @@ This will also setup helm and a kubeconfig, the kubeconfig location can be found
 You can verify your new cluster information by running: `KUBECONFIG=$(kind get kubeconfig-path --name=petclinic) kubectl cluster-info`  
 
 Enter `kubectl get pods` and press enter. You should see that you have no resources currently, but otherwise see no errors.
+
+### Starting services in KIND  
+
 
 ## Understanding the Spring Petclinic application
 
