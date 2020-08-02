@@ -18,11 +18,11 @@ This fork also demostrates the use of free distributed tracing with Tanzu Observ
 
 You can then access petclinic here: http://localhost:8080/
 
-![Spring Petclinic Microservices screenshot](file:///Users/odedia/git/spring-petclinic-cloud/docs/application-screenshot.png?lastModify=1596391473)
+![Spring Petclinic Microservices screenshot](./docs/application-screenshot.png?lastModify=1596391473)
 
 **Architecture diagram of the Spring Petclinic Microservices**
 
-![img](file:///Users/odedia/git/spring-petclinic-cloud/docs/microservices-architecture-diagram.jpg?lastModify=1596391473)
+![img](./docs/microservices-architecture-diagram.jpg?lastModify=1596391473)
 
 
 
