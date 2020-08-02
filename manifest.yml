@@ -1,0 +1,70 @@
+---
+applications:
+  - name: customers-service
+    path: spring-petclinic-customers-service/target/customers-service.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    routes:
+      - route: customers-service.apps.internal
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - customers-db
+      - config
+      - registry
+      - wavefront
+
+  - name: vets-service
+    path: spring-petclinic-vets-service/target/vets-service.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    routes:
+      - route: vets-service.apps.internal
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - vets-db
+      - config
+      - registry
+      - wavefront
+
+  - name: visits-service
+    path: spring-petclinic-visits-service/target/visits-service.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    routes:
+      - route: visits-service.apps.internal
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - visits-db
+      - config
+      - registry
+      - wavefront
+
+  - name: api-gateway
+    path: spring-petclinic-api-gateway/target/api-gateway.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - config
+      - registry
+      - wavefront

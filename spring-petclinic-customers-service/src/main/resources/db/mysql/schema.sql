@@ -1,7 +1,6 @@
-CREATE DATABASE IF NOT EXISTS petclinic;
-GRANT ALL PRIVILEGES ON petclinic.* TO pc@localhost IDENTIFIED BY 'pc';
+CREATE DATABASE IF NOT EXISTS service_instance_db;
 
-USE petclinic;
+USE service_instance_db;
 
 CREATE TABLE IF NOT EXISTS types (
   id INT(4) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

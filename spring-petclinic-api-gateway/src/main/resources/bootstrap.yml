@@ -4,9 +4,28 @@ spring:
       uri: http://localhost:8888
   application:
     name: api-gateway
+#this is a bug that needs to be resolved
+management:
+  metrics:
+    export:
+      wavefront:
+        apiToken: ""
 ---
 spring:
   profiles: docker
   cloud:
     config:
       uri: http://config-server:8888
+---
+spring:
+  profiles: kubernetes
+  cloud:
+    config:
+      enabled: false
+    kubernetes:
+      reload:
+        strategy: restart-context
+        enabled: true
+      config:
+        enabled: true
+        name: pet-clinic-config
