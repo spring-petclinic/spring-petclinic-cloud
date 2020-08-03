@@ -29,3 +29,7 @@ spring:
       config:
         enabled: true
         name: pet-clinic-config
+management:
+  endpoint:
+    restart:
+      enabled: true

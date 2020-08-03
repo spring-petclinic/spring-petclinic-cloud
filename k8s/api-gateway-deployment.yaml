@@ -24,14 +24,18 @@ spec:
         livenessProbe:
           httpGet:
             port: 8080
-            path: /actuator/health
+            path: /actuator/health/liveness
           initialDelaySeconds: 90
-          periodSeconds: 2
+          periodSeconds: 5
         readinessProbe:
           httpGet:
             port: 8080
-            path: /actuator/health
+            path: /actuator/health/readiness
           initialDelaySeconds: 15
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 10"]
         resources:
           limits:
             memory: 1Gi

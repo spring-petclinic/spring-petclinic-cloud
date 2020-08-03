@@ -23,6 +23,10 @@ spring:
       config:
         enabled: true
         name: pet-clinic-config
+management:
+  endpoint:
+    restart:
+      enabled: true
 ---
 spring:
   profiles: tas4k8s
@@ -36,3 +40,7 @@ spring:
       config:
         enabled: true
         name: pet-clinic-config
+management:
+  endpoint:
+    restart:
+      enabled: true
