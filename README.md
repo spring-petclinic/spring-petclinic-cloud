@@ -213,24 +213,24 @@ helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --v
 
 ### Deploying the application
 
-Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment varialbes in the yaml descriptors. We have a small script to do it for us.
+Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the yaml descriptors. We have a small script to do it for us.
 
 We'll need to update our `REPOSITORY_PREFIX` since we're going to use it with the `sed` command which doesn't like `/` in the strings it replaces. Add a double `\\` after every `/`. For example, instead of this:
 
 ```
-export REPOSITORY_PREFIX=harbor.myregistry.com/demo
+REPOSITORY_PREFIX=harbor.myregistry.com/demo
 ```
 
 Set the value to this:
 
 ```
-export REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
 ```
 
 Now we can deploy our containers:
 
 ```
- ./scripts/deployToKubernetes.sh
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo ./scripts/deployToKubernetes.sh
 ```
 
 Verify the pods are deployed:
