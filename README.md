@@ -141,6 +141,8 @@ One of the neat features in Spring Boot 2.3 is that it can leverage [Cloud Nativ
 mvn spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=${REPOSITORY_PREFIX} && ./scripts/pushImages.sh
 ```
 
+Since these are standalone microservices, you can also `cd` into any of the project folders and build it indivitually (as well as push it to the registry).
+
 You should now have all your images in your Docke registry. It might be good to make sure you can see them available.
 
 Make sure you're targeting your Kubernetes cluster
