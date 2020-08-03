@@ -135,11 +135,13 @@ For other Docker registries, provide the full URL to your repository, for exampl
 export REPOSITORY_PREFIX=harbor.myregistry.com/demo
 ```
 
-One of the neat feaures in Spring Boot 2.3 is that it can leverage [Cloud Native Buildpacks]https://buildpacks.io and [Paketo Buildpacks]https://paketo.io to build production-ready images for us. Since we also configured the `spring-boot-maven-plugin` to use `layers`, we'll get optimized layering of the various components that build our Spring Boot app for optimal image caching. What this means in practice is that if we simple change a line of code in our app, it would only require us to push the layer containing our code and not the entire uber jar. To build all images and pushing them to your registry, run:
+One of the neat features in Spring Boot 2.3 is that it can leverage [Cloud Native Buildpacks]https://buildpacks.io and [Paketo Buildpacks]https://paketo.io to build production-ready images for us. Since we also configured the `spring-boot-maven-plugin` to use `layers`, we'll get optimized layering of the various components that build our Spring Boot app for optimal image caching. What this means in practice is that if we simple change a line of code in our app, it would only require us to push the layer containing our code and not the entire uber jar. To build all images and pushing them to your registry, run:
 
 ```
 mvn spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=${REPOSITORY_PREFIX} && ./scripts/pushImages.sh
 ```
+
+Since these are standalone microservices, you can also `cd` into any of the project folders and build it indivitually (as well as push it to the registry).
 
 You should now have all your images in your Docke registry. It might be good to make sure you can see them available.
 
@@ -211,24 +213,24 @@ helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --v
 
 ### Deploying the application
 
-Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment varialbes in the yaml descriptors. We have a small script to do it for us.
+Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the yaml descriptors. We have a small script to do it for us.
 
 We'll need to update our `REPOSITORY_PREFIX` since we're going to use it with the `sed` command which doesn't like `/` in the strings it replaces. Add a double `\\` after every `/`. For example, instead of this:
 
 ```
-export REPOSITORY_PREFIX=harbor.myregistry.com/demo
+REPOSITORY_PREFIX=harbor.myregistry.com/demo
 ```
 
 Set the value to this:
 
 ```
-export REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
 ```
 
 Now we can deploy our containers:
 
 ```
- ./scripts/deployToKubernetes.sh
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo ./scripts/deployToKubernetes.sh
 ```
 
 Verify the pods are deployed:
@@ -252,7 +254,7 @@ wavefront-proxy-dfbd4b695-fdd6t      1/1     Running   0          14m
 Get the `EXTERNAL-IP` of the API Gateway:
 
 ```
-✗ k get svc -n spring-pet-clinic api-gateway 
+✗ kubectl get svc -n spring-pet-clinic api-gateway 
 NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
 api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
 ```
