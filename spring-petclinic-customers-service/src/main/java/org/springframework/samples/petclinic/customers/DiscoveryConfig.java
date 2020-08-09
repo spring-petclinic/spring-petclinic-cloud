@@ -7,4 +7,4 @@ import org.springframework.context.annotation.Configuration;
 @EnableDiscoveryClient
 public class DiscoveryConfig {
 
-}
+}   
