@@ -7,7 +7,7 @@ metadata:
     app: wavefront-proxy
     name: wavefront-proxy
   name: wavefront-proxy
-  namespace: spring-pet-clinic
+  namespace: spring-petclinic
 spec:
   replicas: 1
   selector:
@@ -35,7 +35,7 @@ spec:
                key: wavefront-api-token
         # Uncomment the below lines to consume Zipkin/Istio traces
         - name: WAVEFRONT_PROXY_ARGS
-          value: --traceZipkinListenerPorts 9411 --traceZipkinApplicationName spring-pet-clinic-k8s
+          value: --traceZipkinListenerPorts 9411 --traceZipkinApplicationName spring-petclinic-k8s
         ports:
         - containerPort: 2878
           protocol: TCP
@@ -51,7 +51,7 @@ metadata:
   name: wavefront-proxy
   labels:
     app: wavefront-proxy
-  namespace: spring-pet-clinic
+  namespace: spring-petclinic
 spec:
   ports:
   - name: wavefront
