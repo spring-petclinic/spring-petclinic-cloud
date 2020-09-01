@@ -1,6 +1,6 @@
 echo "Creating Required Services..."
 {
-  cf create-service -c '{ "git": { "uri": "https://github.com/odedia/spring-petclinic-microservices-config.git", "periodic": true }, "count": 3 }' p.config-server standard config &
+  cf create-service -c '{ "git": { "uri": "https://github.com/spring-petclinic/spring-petclinic-cloud-config.git", "periodic": true }, "count": 3 }' p.config-server standard config &
   cf create-service p.service-registry standard registry & 
   cf create-service p.mysql db-small customers-db &
   cf create-service p.mysql db-small vets-db &
