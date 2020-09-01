@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: visits-service
+  name: visits-service
+  namespace: spring-pet-clinic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: visits-service
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: visits-service
+    spec:
+      containers:
+      - image: ${REPOSITORY_PREFIX}/visits-service:latest
+        name: visits-service
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/liveness
+          initialDelaySeconds: 90
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/readiness
+          initialDelaySeconds: 15
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 10"]
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:mysql://visits-db-mysql.spring-pet-clinic.svc.cluster.local:3306/my_database?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=customers-db
+        - name: SPRING_DATASOURCE_USERNAME
+          value: root
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+             secretKeyRef:
+               name: visits-db-mysql
+               key: mysql-root-password
+        - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
+          value: proxy://wavefront-proxy.spring-pet-clinic.svc.cluster.local:2878
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+status: {}

@@ -1,0 +1,19 @@
+---
+applications:
+  - name: customers-service
+    path: target/customers-service.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    routes:
+      - route: customers-service.apps.internal
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - customers-db
+      - config
+      - registry
+      - wavefront

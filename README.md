@@ -1,16 +1,282 @@
-# Distributed version of the Spring PetClinic Sample Application built with Spring Cloud 
+# Distributed version of the Spring PetClinic - adapted for Cloud Foundry and Kubernetes 
 
-[![Build Status](https://travis-ci.org/spring-petclinic/spring-petclinic-cloud.svg?branch=master)](https://travis-ci.org/spring-petclinic/spring-petclinic-cloud) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Build Status](https://travis-ci.org/spring-petclinic/spring-petclinic-microservices.svg?branch=master)](https://travis-ci.org/spring-petclinic/spring-petclinic-microservices/) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-This microservices branch was initially derived from [AngularJS version](https://github.com/spring-petclinic/spring-petclinic-angular1) to demonstrate how to split sample Spring application into [microservices](http://www.martinfowler.com/articles/microservices.html).
-To achieve that goal we use Spring Cloud Gateway, Spring Cloud Circuit Breaker, Spring Cloud Config, Spring Cloud Sleuth, Resilience4j, Micrometer 
-and the Eureka Service Discovery from the [Spring Cloud Netflix](https://github.com/spring-cloud/spring-cloud-netflix) technology stack.
+This microservices branch was initially derived from the [microservices version](https://github.com/spring-petclinic/spring-petclinic-microservices) to demonstrate how to split sample Spring application into [microservices](http://www.martinfowler.com/articles/microservices.html).
+To achieve that goal we use Spring Cloud Gateway, Spring Cloud Circuit Breaker, Spring Cloud Config, Spring Cloud Sleuth, Resilience4j, Micrometer and the Eureka Service Discovery from the [Spring Cloud Netflix](https://github.com/spring-cloud/spring-cloud-netflix) technology stack. While running on Kubernetes, some components (such as Spring Cloud Config and Eureka Service Discovery) are replaced with Kubernetes-native features such as config maps and Kubernetes DNS resolution.
+
+This fork also demostrates the use of free distributed tracing with Tanzu Observability by Wavefront, which provides cloud-based monitoring of  Spring Boot applications with 5 days of history.
+
+
+
+## Understanding the Spring Petclinic application
+
+[See the presentation of the Spring Petclinic Framework version](http://fr.slideshare.net/AntoineRey/spring-framework-petclinic-sample-application)
+
+[A blog bost introducing the Spring Petclinic Microsevices](http://javaetmoi.com/2018/10/architecture-microservices-avec-spring-cloud/) (french language)
+
+You can then access petclinic here: http://localhost:8080/
+
+![Spring Petclinic Microservices screenshot](./docs/application-screenshot.png?lastModify=1596391473)
+
+
+
+
+## Compiling and pushing to Cloud Foundry:
+
+The samples below are using Tanzu Application Service (previously Pivotal Cloud Foundry) as the target Cloud Foundry deployment, some adjustments may be needed for other Cloud Foundry distributions.
+
+Please make sure you have the latest `cf` cli installed: https://docs.cloudfoundry.org/cf-cli/install-go-cli.html
+For more information on Tanzu Application Service, see: https://docs.pivotal.io/application-service/2-10/overview/dev.html
+For a list of available Cloud Foundry distributions, see: https://www.cloudfoundry.org/certified-platforms/
+For local testing and development, you can use PCF Dev: https://docs.pivotal.io/pcf-dev/
+
+This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from https://github.com/odedia/spring-petclinic-cloud/blob/master/manifest.yml. 
+Otherwise, generate a free wavefront token by running one of the apps, for example:
+
+```bash
+cd spring-petclinic-api-gateway
+mvn spring-boot:run
+```
+
+You will see something like this in the logs:
+
+```
+A Wavefront account has been provisioned successfully and the API token has been saved to disk.
+
+To share this account, make sure the following is added to your configuration:
+
+	management.metrics.export.wavefront.api-token=2e41f7cf-1111-2222-3333-7397a56113ca
+	management.metrics.export.wavefront.uri=https://wavefront.surf
+
+Connect to your Wavefront dashboard using this one-time use link:
+https://wavefront.surf/us/AAA4s5f8xJ9yD
+
+```
+
+You free account has now been created.
+
+Create a user-provided service for Wavefront using the data above. For example:
+
+```
+cf cups -p '{"uri": "https://wavefront.surf", "api-token": "2e41f7cf-1111-2222-3333-7397a56113ca", "application-name": "spring-petclinic-cloudfoundry", "fremium": "true"}' wavefront
+```
+If your operator deployed the wavefront proxy in your Cloud Foundry environment, point the URI to the proxy instead. You can obtain the value of the IP and port by creating a service key of the wavefront proxy and viewing the resulting JSON file. 
+
+Contine with creating the services and deploying the application's microservices. A sample is available at `scripts/deployToCloudFoundry.sh`. Note that some of the services' plans may be different in your environment, so please review before executing. For example, you want want to fork [https://github.com/odedia/spring-petclinic-microservices-config.git]https://github.com/odedia/spring-petclinic-microservices-config.git if you want to make changes to the configuration.
+
+```
+echo "Creating Required Services..."
+{
+  cf create-service -c '{ "git": { "uri": "https://github.com/odedia/spring-petclinic-microservices-config.git", "periodic": true }, "count": 3 }' p.config-server standard config &
+  cf create-service p.service-registry standard registry & 
+  cf create-service p.mysql db-small customers-db &
+  cf create-service p.mysql db-small vets-db &
+  cf create-service p.mysql db-small visits-db &
+  sleep 5
+} &> /dev/null
+until [ `cf service config | grep -c "succeeded"` -ge 1  ] && [ `cf service registry | grep -c "succeeded"` -ge 1  ] && [ `cf service customers-db | grep -c "succeeded"` -ge 1  ] && [ `cf service vets-db | grep -c "succeeded"` -ge 1  ] && [ `cf service visits-db | grep -c "succeeded"` -ge 1  ]
+do
+  echo -n "."
+done
+
+mvn clean package -Pcloud
+cf push --no-start
+
+cf add-network-policy api-gateway --destination-app vets-service --protocol tcp --port 8080
+cf add-network-policy api-gateway --destination-app customers-service --protocol tcp --port 8080
+cf add-network-policy api-gateway --destination-app visits-service --protocol tcp --port 8080
+
+cf start vets-service & cf start visits-service & cf start customers-service & cf start api-gateway &
+```
+
+You can now access your application by querying the route for the `api-gateway`:
+
+```
+✗ cf apps
+Getting apps in org pivot-odedia / space pet-clinic as user@email.com...
+OK
+
+name                requested state   instances   memory   disk   urls
+api-gateway         started           1/1         1G       1G     api-gateway.apps.mysite.com
+customers-service   started           1/1         1G       1G     customers-service.apps.internal
+vets-service        started           1/1         1G       1G     vets-service.apps.internal
+visits-service      started           1/1         1G       1G     visits-service.apps.internal
+
+```
+
+Access your route (like `api-gateway.apps.mysite.com` above) to see the application.
+
+Access the one-time URL you received when bootstraping Wavefront to see Zipkin traces and other monitoring of your microservices:
+
+![Wavefront dashboard scree](./docs/wavefront-summary.png)
+
+Since we've included `brave.mysql8` in our `pom.xml`, the traces even show the various DB queries traces:
+
+![Wavefront dashboard scree](./docs/wavefront-traces.png)
+
+
+
+## Compiling and pushing to Kubernetes
+
+This get a little bit more complicated when deploying to Kubernetes, since we need to manage Docker images, exposing services and more yaml. But we can pull through!
+
+### Choose your Docker registry
+
+You need to define your target Docker registry. Make sure you're already logged in by running `docker login <endpoint>` or `docker login` if you're just targeting Docker hub.
+
+Setup an env varible to target your Docker registry. If you're targeting Docker hub, simple provide your username, for example:
+
+```
+export REPOSITORY_PREFIX=odedia
+```
+
+For other Docker registries, provide the full URL to your repository, for example:
+
+```
+export REPOSITORY_PREFIX=harbor.myregistry.com/demo
+```
+
+One of the neat features in Spring Boot 2.3 is that it can leverage [Cloud Native Buildpacks](https://buildpacks.io) and [Paketo Buildpacks](https://paketo.io) to build production-ready images for us. Since we also configured the `spring-boot-maven-plugin` to use `layers`, we'll get optimized layering of the various components that build our Spring Boot app for optimal image caching. What this means in practice is that if we simple change a line of code in our app, it would only require us to push the layer containing our code and not the entire uber jar. To build all images and pushing them to your registry, run:
+
+```
+mvn spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=${REPOSITORY_PREFIX} && ./scripts/pushImages.sh
+```
+
+Since these are standalone microservices, you can also `cd` into any of the project folders and build it indivitually (as well as push it to the registry).
+
+You should now have all your images in your Docke registry. It might be good to make sure you can see them available.
+
+Make sure you're targeting your Kubernetes cluster
+
+### Setting things up in Kubernetes
+
+Create the namespace for Spring Pet-clinic:
+
+```
+kubectl apply -f k8s/init-namespace/ 
+```
+
+Create a Kubernetes secret to store the URL and API Token of Wavefront (replace values with your own real ones):
+
+```
+kubectl create secret generic wavefront -n spring-pet-clinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
+```
+
+Create the Wavefront proxy pod, and the various Kubernetes services that will be used later on by our deployments:
+
+```
+kubectl apply -f k8s/init-services
+```
+
+Verify the services are available:
+
+```
+✗ kubectl get svc -n spring-pet-clinic
+NAME                TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
+api-gateway         LoadBalancer   10.7.250.24    <pending>     80:32675/TCP        36s
+customers-service   ClusterIP      10.7.245.64    <none>        8080/TCP            36s
+vets-service        ClusterIP      10.7.245.150   <none>        8080/TCP            36s
+visits-service      ClusterIP      10.7.251.227   <none>        8080/TCP            35s
+wavefront-proxy     ClusterIP      10.7.253.85    <none>        2878/TCP,9411/TCP   37s
+```
+
+Verify the wavefront proxy is running:
+
+```
+✗ kubectl get pods -n spring-pet-clinic
+NAME                              READY   STATUS    RESTARTS   AGE
+wavefront-proxy-dfbd4b695-fdd6t   1/1     Running   0          36s
+
+```
+
+### Settings up databases with helm
+
+We'll now need to deploy our databases. For that, we'll use helm. You'll need helm 3 and above since we're not using Tiller in this deployment.
+
+Make sure you have a single `default` StorageClass in your Kubernetes cluster:
+
+```
+✗ kubectl get sc
+NAME                 PROVISIONER            AGE
+standard (default)   kubernetes.io/gce-pd   6h11m
+
+```
+
+Deploy the databases:
+
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install vets-db-mysql bitnami/mysql --namespace spring-pet-clinic --version 6.14.3
+helm install visits-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3
+helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3
+```
+
+### Deploying the application
+
+Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the yaml descriptors. We have a small script to do it for us.
+
+We'll need to update our `REPOSITORY_PREFIX` since we're going to use it with the `sed` command which doesn't like `/` in the strings it replaces. Add a double `\\` after every `/`. For example, instead of this:
+
+```
+REPOSITORY_PREFIX=harbor.myregistry.com/demo
+```
+
+Set the value to this:
+
+```
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
+```
+
+Now we can deploy our containers:
+
+```
+REPOSITORY_PREFIX=harbor.myregistry.com\\/demo ./scripts/deployToKubernetes.sh
+```
+
+Verify the pods are deployed:
+
+```bash
+✗ kubectl get pods -n spring-pet-clinic 
+NAME                                 READY   STATUS    RESTARTS   AGE
+api-gateway-585fff448f-q45jc         1/1     Running   0          4m20s
+customers-db-mysql-master-0          1/1     Running   0          11m
+customers-db-mysql-slave-0           1/1     Running   0          11m
+customers-service-5d7d686654-kpcmx   1/1     Running   0          4m19s
+vets-db-mysql-master-0               1/1     Running   0          11m
+vets-db-mysql-slave-0                1/1     Running   0          11m
+vets-service-85cb8677df-l5xpj        1/1     Running   0          4m2s
+visits-db-mysql-master-0             1/1     Running   0          11m
+visits-db-mysql-slave-0              1/1     Running   0          11m
+visits-service-654fffbcc7-zj2jw      1/1     Running   0          4m2s
+wavefront-proxy-dfbd4b695-fdd6t      1/1     Running   0          14m
+```
+
+Get the `EXTERNAL-IP` of the API Gateway:
+
+```
+✗ kubectl get svc -n spring-pet-clinic api-gateway 
+NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
+api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
+```
+
+You can now brose to that IP in your browser and see the application running.
+
+You should also see monitoring and traces from Wavefront under the application name `spring-petclinic-k8s`:
+
+![Wavefront dashboard scree](./docs/wavefront-k8s.png)
+
+
+
+
 
 ## Starting services locally without Docker
 
-Every microservice is a Spring Boot application and can be started locally using IDE ([Lombok](https://projectlombok.org/) plugin has to be set up) or `../mvnw spring-boot:run` command. Please note that supporting services (Config and Discovery Server) must be started before any other application (Customers, Vets, Visits and API).
+Every microservice is a Spring Boot application and can be started locally using IDE or `../mvnw spring-boot:run` command. Please note that supporting services (Config and Discovery Server) must be started before any other application (Customers, Vets, Visits and API).
 Startup of Tracing server, Admin server, Grafana and Prometheus is optional.
 If everything goes well, you can access the following services at given location:
+
 * Discovery Server - http://localhost:8761
 * Config Server - http://localhost:8888
 * AngularJS frontend (API Gateway) - http://localhost:8080
@@ -24,36 +290,19 @@ You can tell Config Server to use your local Git repository by using `native` Sp
 `GIT_REPO` environment variable, for example:
 `-Dspring.profiles.active=native -DGIT_REPO=/projects/spring-petclinic-microservices-config`
 
-## Starting services locally with KIND  
-### Starting KIND
-This will setup a [Kubernetes IN Docker](https://github.com/kubernetes-sigs/kind) cluster named petclinic by default.
+## Starting services locally with docker-compose
 
-First, [install Kind](https://github.com/kubernetes-sigs/kind#installation-and-usage).
+In order to start entire infrastructure using Docker, you have to build images by executing `./mvnw clean install -P buildDocker` 
+from a project root. Once images are ready, you can start them with a single command
+`docker-compose up`. Containers startup order is coordinated with [`dockerize` script](https://github.com/jwilder/dockerize). 
+After starting services it takes a while for API Gateway to be in sync with service registry,
+so don't be scared of initial Spring Cloud Gateway timeouts. You can track services availability using Eureka dashboard
+available by default at http://localhost:8761.
 
-next we will create the Petclinic Kind cluster. Run `make kind-test-cluster` to create the `petclinic` Kubernetes cluster.  
-This will also setup helm and a kubeconfig, the kubeconfig location can be found using the following command `kind get kubeconfig-path --name=petclinic`
- assuming you're using the default `KIND_PROFILE`.  
-You can verify your new cluster information by running: `KUBECONFIG=$(kind get kubeconfig-path --name=petclinic) kubectl cluster-info`  
+The `master` branch uses an  Alpine linux  with JRE 8 as Docker base. You will find a Java 11 version in the `release/java11` branch.
 
-Enter `kubectl get pods` and press enter. You should see that you have no resources currently, but otherwise see no errors.
-
-### Starting services in KIND  
-
-
-## Understanding the Spring Petclinic application
-
-[See the presentation of the Spring Petclinic Framework version](http://fr.slideshare.net/AntoineRey/spring-framework-petclinic-sample-application)
-
-[A blog bost introducing the Spring Petclinic Microsevices](http://javaetmoi.com/2018/10/architecture-microservices-avec-spring-cloud/) (french language)
-
-You can then access petclinic here: http://localhost:8080/
-
-![Spring Petclinic Microservices screenshot](docs/application-screenshot.png)
-
-
-**Architecture diagram of the Spring Petclinic Microservices**
-##### TODO: Update to represent k8s architecture 
-![Spring Petclinic Microservices architecture](docs/microservices-architecture-diagram.jpg)
+*NOTE: Under MacOSX or Windows, make sure that the Docker VM has enough memory to run the microservices. The default settings
+are usually not enough and make the `docker-compose up` painfully slow.*
 
 
 ## In case you find a bug/suggested improvement for Spring Petclinic Microservices
@@ -127,7 +376,10 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 
 | Spring Cloud components         | Resources  |
 |---------------------------------|------------|
+| Configuration server            | [Config server properties](spring-petclinic-config-server/src/main/resources/application.yml) and [Configuration repository] |
+| Service Discovery               | [Eureka server](spring-petclinic-discovery-server) and [Service discovery client](spring-petclinic-vets-service/src/main/java/org/springframework/samples/petclinic/vets/VetsServiceApplication.java) |
 | API Gateway                     | [Spring Cloud Gateway starter](spring-petclinic-api-gateway/pom.xml) and [Routing configuration](/spring-petclinic-api-gateway/src/main/resources/application.yml) |
+| Docker Compose                  | [Spring Boot with Docker guide](https://spring.io/guides/gs/spring-boot-docker/) and [docker-compose file](docker-compose.yml) |
 | Circuit Breaker                 | [Resilience4j fallback method](spring-petclinic-api-gateway/src/main/java/org/springframework/samples/petclinic/api/boundary/web/ApiGatewayController.java)  |
 | Grafana / Prometheus Monitoring | [Micrometer implementation](https://micrometer.io/), [Spring Boot Actuator Production Ready Metrics] |
 
@@ -141,10 +393,10 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 
 ## Interesting Spring Petclinic forks
 
-The Spring Petclinic `main` branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
+The Spring Petclinic master branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
 GitHub org is the "canonical" implementation, currently based on Spring Boot and Thymeleaf.
 
-This [spring-petclinic-cloud](https://github.com/spring-petclinic/spring-petclinic-cloud/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
+This [spring-petclinic-microservices](https://github.com/spring-petclinic/spring-petclinic-microservices/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
 hosted in a special GitHub org: [spring-petclinic](https://github.com/spring-petclinic).
 If you have a special interest in a different technology stack
 that could be used to implement the Pet Clinic then please join the community there.
@@ -152,9 +404,10 @@ that could be used to implement the Pet Clinic then please join the community th
 
 # Contributing
 
-The [issue tracker](https://github.com/spring-petclinic/spring-petclinic-cloud/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
+The [issue tracker](https://github.com/spring-petclinic/spring-petclinic-microservices/issues) is the preferred channel for bug reports, features requests and submitting pull requests.
 
 For pull requests, editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at <http://editorconfig.org>.
 
 
+[Configuration repository]: https://github.com/spring-petclinic/spring-petclinic-microservices-config
 [Spring Boot Actuator Production Ready Metrics]: https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-metrics.html

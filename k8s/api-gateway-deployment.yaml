@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: api-gateway
+  name: api-gateway
+  namespace: spring-pet-clinic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - image: ${REPOSITORY_PREFIX}/api-gateway:latest
+        name: api-gateway
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/liveness
+          initialDelaySeconds: 90
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /actuator/health/readiness
+          initialDelaySeconds: 15
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 10"]
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: kubernetes
+        - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
+          value: proxy://wavefront-proxy.spring-pet-clinic.svc.cluster.local:2878
+        ports:
+        - containerPort: 8080
+        resources: {}
+      restartPolicy: Always
+status: {}

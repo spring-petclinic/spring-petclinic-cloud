@@ -1,0 +1,16 @@
+---
+applications:
+  - name: api-gateway
+    path: target/api-gateway.jar
+    buildpacks:
+      - java_buildpack_offline
+    health-check-type: http
+    health-check-http-endpoint: /actuator/health
+    env:
+      JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ } }'
+      JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+      SPRING_PROFILES_ACTIVE: cloud
+    services:
+      - config
+      - registry
+      - wavefront

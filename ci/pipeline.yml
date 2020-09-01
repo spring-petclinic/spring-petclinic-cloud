@@ -1,0 +1,38 @@
+resource_types:
+- name: cf-cli-resource
+  type: docker-image
+  source:
+    repository: nulldriver/cf-cli-resource
+    tag: latest
+
+resources:  
+  - name: cf
+    type: cf
+    source:
+      api: ((cf-api))
+      username: ((cf-username))
+      password: ((cf-password))
+      organization: ((cf-org))
+      space: ((cf-space))
+  - name: docker-image
+    type: docker-image
+    source:
+      repository: spring-petclinic/api-gateway
+
+jobs:
+  - name: deploy
+    plan:
+    - get: docker-image
+      trigger: true
+      params:
+        globs: [ "((app)).jar", "manifest.yml" ]
+    - put: cf
+      params:
+        manifest: github-prerelease/manifest.yml
+        current_app_name: ((app))
+    - put: cf-add-network-policy
+      resource: cf-env
+      params:
+        command: add-network-policy
+        source_app: cloudnativepoll-webui
+        destination_app: cloudnativepoll-backend
