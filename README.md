@@ -26,12 +26,13 @@ You can then access petclinic here: http://localhost:8080/
 
 The samples below are using Tanzu Application Service (previously Pivotal Cloud Foundry) as the target Cloud Foundry deployment, some adjustments may be needed for other Cloud Foundry distributions.
 
-Please make sure you have the latest `cf` cli installed: https://docs.cloudfoundry.org/cf-cli/install-go-cli.html
-For more information on Tanzu Application Service, see: https://docs.pivotal.io/application-service/2-10/overview/dev.html
-For a list of available Cloud Foundry distributions, see: https://www.cloudfoundry.org/certified-platforms/
-For local testing and development, you can use PCF Dev: https://docs.pivotal.io/pcf-dev/
+Please make sure you have the latest `cf` cli installed: https://docs.cloudfoundry.org/cf-cli/install-go-cli.html  
+For more information on Tanzu Application Service, see: https://docs.pivotal.io/application-service/2-10/overview/dev.html  
+For a list of available Cloud Foundry distributions, see: https://www.cloudfoundry.org/certified-platforms/  
+For local testing and development, you can use PCF Dev: https://docs.pivotal.io/pcf-dev/  
 
 This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from https://github.com/spring-petclinic/spring-petclinic-cloud/blob/master/manifest.yml. 
+
 Otherwise, generate a free wavefront token by running one of the apps, for example:
 
 ```bash
