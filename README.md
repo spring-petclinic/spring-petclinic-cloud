@@ -31,7 +31,8 @@ For more information on Tanzu Application Service, see: https://docs.pivotal.io/
 For a list of available Cloud Foundry distributions, see: https://www.cloudfoundry.org/certified-platforms/  
 For local testing and development, you can use PCF Dev: https://docs.pivotal.io/pcf-dev/  
 
-This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from [manifest.yml](manifest.yml).
+This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from https://github.com/spring-petclinic/spring-petclinic-cloud/blob/master/manifest.yml. 
+
 Otherwise, generate a free wavefront token by running one of the apps, for example:
 
 ```bash
@@ -63,12 +64,12 @@ cf cups -p '{"uri": "https://wavefront.surf", "api-token": "2e41f7cf-1111-2222-3
 ```
 If your operator deployed the wavefront proxy in your Cloud Foundry environment, point the URI to the proxy instead. You can obtain the value of the IP and port by creating a service key of the wavefront proxy and viewing the resulting JSON file. 
 
-Contine with creating the services and deploying the application's microservices. A sample is available at `scripts/deployToCloudFoundry.sh`. Note that some of the services' plans may be different in your environment, so please review before executing. For example, you want want to fork [https://github.com/odedia/spring-petclinic-microservices-config.git]https://github.com/odedia/spring-petclinic-microservices-config.git if you want to make changes to the configuration.
+Contine with creating the services and deploying the application's microservices. A sample is available at `scripts/deployToCloudFoundry.sh`. Note that some of the services' plans may be different in your environment, so please review before executing. For example, you want want to fork [https://github.com/spring-petclinic/spring-petclinic-cloud-config.git]https://github.com/spring-petclinic/spring-petclinic-cloud-config.git if you want to make changes to the configuration.
 
 ```
 echo "Creating Required Services..."
 {
-  cf create-service -c '{ "git": { "uri": "https://github.com/odedia/spring-petclinic-microservices-config.git", "periodic": true }, "count": 3 }' p.config-server standard config &
+  cf create-service -c '{ "git": { "uri": "https://github.com/spring-petclinic/spring-petclinic-microservices-config.git", "periodic": true }, "count": 3 }' p.config-server standard config &
   cf create-service p.service-registry standard registry & 
   cf create-service p.mysql db-small customers-db &
   cf create-service p.mysql db-small vets-db &
@@ -94,7 +95,7 @@ You can now access your application by querying the route for the `api-gateway`:
 
 ```
 ✗ cf apps
-Getting apps in org pivot-odedia / space pet-clinic as user@email.com...
+Getting apps in org pet-clinic / space pet-clinic as user@email.com...
 OK
 
 name                requested state   instances   memory   disk   urls
@@ -208,31 +209,17 @@ Deploy the databases:
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install vets-db-mysql bitnami/mysql --namespace spring-pet-clinic --version 6.14.3
-helm install visits-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3
-helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3
+helm install vets-db-mysql bitnami/mysql --namespace spring-pet-clinic --version 6.14.3 --set db.name=service_instance_db
+helm install visits-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
 ```
 
 ### Deploying the application
 
-Our delpoyment yamls have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the yaml descriptors. We have a small script to do it for us.
-
-We'll need to update our `REPOSITORY_PREFIX` since we're going to use it with the `sed` command which doesn't like `/` in the strings it replaces. Add a double `\\` after every `/`. For example, instead of this:
+Our deployment YAMLs have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the YAML descriptors. We have a small script to do it for us and run our deployments:
 
 ```
-REPOSITORY_PREFIX=harbor.myregistry.com/demo
-```
-
-Set the value to this:
-
-```
-REPOSITORY_PREFIX=harbor.myregistry.com\\/demo
-```
-
-Now we can deploy our containers:
-
-```
-REPOSITORY_PREFIX=harbor.myregistry.com\\/demo ./scripts/deployToKubernetes.sh
+./scripts/deployToKubernetes.sh
 ```
 
 Verify the pods are deployed:

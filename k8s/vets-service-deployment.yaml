@@ -2,7 +2,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
   labels:
     app: vets-service
   name: vets-service
@@ -47,7 +46,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: kubernetes
         - name: SPRING_DATASOURCE_URL
-          value: jdbc:mysql://vets-db-mysql.spring-pet-clinic.svc.cluster.local:3306/my_database?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=customers-db
+          value: jdbc:mysql://vets-db-mysql.spring-pet-clinic.svc.cluster.local:3306/service_instance_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=vets-db
         - name: SPRING_DATASOURCE_USERNAME
           value: root
         - name: SPRING_DATASOURCE_PASSWORD

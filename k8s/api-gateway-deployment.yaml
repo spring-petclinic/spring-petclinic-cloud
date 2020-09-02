@@ -49,6 +49,5 @@ spec:
           value: proxy://wavefront-proxy.spring-pet-clinic.svc.cluster.local:2878
         ports:
         - containerPort: 8080
-        resources: {}
       restartPolicy: Always
 status: {}
