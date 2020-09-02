@@ -31,7 +31,7 @@ For more information on Tanzu Application Service, see: https://docs.pivotal.io/
 For a list of available Cloud Foundry distributions, see: https://www.cloudfoundry.org/certified-platforms/  
 For local testing and development, you can use PCF Dev: https://docs.pivotal.io/pcf-dev/  
 
-This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from https://github.com/spring-petclinic/spring-petclinic-cloud/blob/master/manifest.yml. 
+This application uses Wavefront as a SaaS that can provide free Spring Boot monitoring and Open Tracing for your application. If you'd like to remove the Wavefront integration, please remove the `wavefront` user-provided service reference from [manifest.yml](./manifest.yml). 
 
 Otherwise, generate a free wavefront token by running one of the apps, for example:
 
@@ -64,7 +64,7 @@ cf cups -p '{"uri": "https://wavefront.surf", "api-token": "2e41f7cf-1111-2222-3
 ```
 If your operator deployed the wavefront proxy in your Cloud Foundry environment, point the URI to the proxy instead. You can obtain the value of the IP and port by creating a service key of the wavefront proxy and viewing the resulting JSON file. 
 
-Contine with creating the services and deploying the application's microservices. A sample is available at `scripts/deployToCloudFoundry.sh`. Note that some of the services' plans may be different in your environment, so please review before executing. For example, you want want to fork [https://github.com/spring-petclinic/spring-petclinic-cloud-config.git]https://github.com/spring-petclinic/spring-petclinic-cloud-config.git if you want to make changes to the configuration.
+Contine with creating the services and deploying the application's microservices. A sample is available at `scripts/deployToCloudFoundry.sh`. Note that some of the services' plans may be different in your environment, so please review before executing. For example, you want want to fork the [spring-petclinic-cloud-config](https://github.com/spring-petclinic/spring-petclinic-cloud-config.git) repository if you want to make changes to the configuration.
 
 ```
 echo "Creating Required Services..."
@@ -383,7 +383,7 @@ All those three REST controllers `OwnerResource`, `PetResource` and `VisitResour
 The Spring Petclinic master branch in the main [spring-projects](https://github.com/spring-projects/spring-petclinic)
 GitHub org is the "canonical" implementation, currently based on Spring Boot and Thymeleaf.
 
-This [spring-petclinic-microservices](https://github.com/spring-petclinic/spring-petclinic-microservices/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
+This [spring-petclinic-cloud](https://github.com/spring-petclinic/spring-petclinic-cloud/) project is one of the [several forks](https://spring-petclinic.github.io/docs/forks.html) 
 hosted in a special GitHub org: [spring-petclinic](https://github.com/spring-petclinic).
 If you have a special interest in a different technology stack
 that could be used to implement the Pet Clinic then please join the community there.
