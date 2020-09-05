@@ -5,7 +5,7 @@ metadata:
   labels:
     app: api-gateway
   name: api-gateway
-  namespace: spring-pet-clinic
+  namespace: spring-petclinic
 spec:
   replicas: 1
   selector:
@@ -46,7 +46,7 @@ spec:
         - name: SPRING_PROFILES_ACTIVE
           value: kubernetes
         - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
-          value: proxy://wavefront-proxy.spring-pet-clinic.svc.cluster.local:2878
+          value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
         ports:
         - containerPort: 8080
       restartPolicy: Always

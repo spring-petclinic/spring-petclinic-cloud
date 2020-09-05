@@ -152,7 +152,7 @@ Make sure you're targeting your Kubernetes cluster
 
 ### Setting things up in Kubernetes
 
-Create the namespace for Spring Pet-clinic:
+Create the namespace for Spring petclinic:
 
 ```
 kubectl apply -f k8s/init-namespace/ 
@@ -161,7 +161,7 @@ kubectl apply -f k8s/init-namespace/
 Create a Kubernetes secret to store the URL and API Token of Wavefront (replace values with your own real ones):
 
 ```
-kubectl create secret generic wavefront -n spring-pet-clinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
+kubectl create secret generic wavefront -n spring-petclinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
 ```
 
 Create the Wavefront proxy pod, and the various Kubernetes services that will be used later on by our deployments:
@@ -173,7 +173,7 @@ kubectl apply -f k8s/init-services
 Verify the services are available:
 
 ```
-✗ kubectl get svc -n spring-pet-clinic
+✗ kubectl get svc -n spring-petclinic
 NAME                TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
 api-gateway         LoadBalancer   10.7.250.24    <pending>     80:32675/TCP        36s
 customers-service   ClusterIP      10.7.245.64    <none>        8080/TCP            36s
@@ -185,7 +185,7 @@ wavefront-proxy     ClusterIP      10.7.253.85    <none>        2878/TCP,9411/TC
 Verify the wavefront proxy is running:
 
 ```
-✗ kubectl get pods -n spring-pet-clinic
+✗ kubectl get pods -n spring-petclinic
 NAME                              READY   STATUS    RESTARTS   AGE
 wavefront-proxy-dfbd4b695-fdd6t   1/1     Running   0          36s
 
@@ -209,9 +209,9 @@ Deploy the databases:
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install vets-db-mysql bitnami/mysql --namespace spring-pet-clinic --version 6.14.3 --set db.name=service_instance_db
-helm install visits-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
-helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
+helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 6.14.3 --set db.name=service_instance_db
+helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
 ```
 
 ### Deploying the application
@@ -222,10 +222,11 @@ Our deployment YAMLs have a placeholder called `REPOSITORY_PREFIX` so we'll be a
 ./scripts/deployToKubernetes.sh
 ```
 
+
 Verify the pods are deployed:
 
 ```bash
-✗ kubectl get pods -n spring-pet-clinic 
+✗ kubectl get pods -n spring-petclinic 
 NAME                                 READY   STATUS    RESTARTS   AGE
 api-gateway-585fff448f-q45jc         1/1     Running   0          4m20s
 customers-db-mysql-master-0          1/1     Running   0          11m
@@ -243,7 +244,7 @@ wavefront-proxy-dfbd4b695-fdd6t      1/1     Running   0          14m
 Get the `EXTERNAL-IP` of the API Gateway:
 
 ```
-✗ kubectl get svc -n spring-pet-clinic api-gateway 
+✗ kubectl get svc -n spring-petclinic api-gateway 
 NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
 api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
 ```

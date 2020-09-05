@@ -17,3 +17,4 @@ target/
 # Branch switching
 generated/
 .DS_Store
+.vscode/settings.json
