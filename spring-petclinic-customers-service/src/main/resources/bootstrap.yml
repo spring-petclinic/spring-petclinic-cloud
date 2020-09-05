@@ -22,7 +22,7 @@ spring:
         enabled: true
       config:
         enabled: true
-        name: pet-clinic-config
+        name: petclinic-config
 management:
   endpoint:
     restart:
@@ -39,7 +39,7 @@ spring:
         enabled: true
       config:
         enabled: true
-        name: pet-clinic-config
+        name: petclinic-config
 management:
   endpoint:
     restart:

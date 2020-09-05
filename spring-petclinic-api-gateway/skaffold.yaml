@@ -1,0 +1,82 @@
+apiVersion: skaffold/v2beta6
+kind: Config
+metadata:
+  name: spring-petclinic-cloud
+build:
+  tagPolicy:
+    sha256: {}
+  artifacts:
+  - image: spring-petclinic-config-server
+    context:  ./spring-petclinic-config-server
+    buildpacks:
+      builder:  gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true
+  - image: spring-petclinic-discovery-server
+    context:  ./spring-petclinic-discovery-server
+    buildpacks:
+      builder:  gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true
+  - image: spring-petclinic-customers-service
+    context:  ./spring-petclinic-customers-service
+    buildpacks:
+      builder:  gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true
+  - image: spring-petclinic-visits-service
+    context:  ./spring-petclinic-visits-service
+    buildpacks:
+      builder: gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true
+  - image: spring-petclinic-vets-service
+    context:  ./spring-petclinic-vets-service
+    buildpacks:
+      builder:  gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true
+  - image: spring-petclinic-api-gateway
+    context:  ./spring-petclinic-api-gateway
+    buildpacks:
+      builder:  gcr.io/paketo-buildpacks/builder:base
+      trustBuilder: true     
+deploy:
+  statusCheckDeadlineSeconds: 240
+  helm:
+    releases:
+    - name: customers-db-mysql
+      chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
+      valuesFiles: 
+        - customers-db-values.yaml
+      namespace: spring-petclinic
+      remote: true
+      wait: true
+    - name: vets-db-mysql
+      chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
+      valuesFiles: 
+        - vets-db-values.yaml
+      namespace: spring-petclinic
+      remote: true
+      wait: true
+    - name: visits-db-mysql
+      chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
+      valuesFiles: 
+        - visits-db-values.yaml
+      namespace: spring-petclinic
+      remote: true
+      wait: true
+    flags:
+      install:
+        - "--create-namespace" 
+  kubectl:
+    manifests:
+    - k8s/init-namespace/01-namespace.yaml
+    - k8s/init-namespace/02-regcreds.yaml
+    - k8s/init-services/02-config-map.yaml
+    - k8s/init-services/03-role.yaml
+    #- k8s/init-services/04-wavefront.yaml
+    - k8s/init-services/05-api-gateway-service.yaml
+    - k8s/init-services/06-customers-service-service.yaml
+    - k8s/init-services/07-vets-service-service.yaml
+    - k8s/init-services/08-visits-service-service.yaml
+    - k8s/api-gateway-deployment.yaml
+    - k8s/customers-service-deployment.yaml
+    - k8s/vets-service-deployment.yaml
+    - k8s/visits-service-deployment.yaml
+  
