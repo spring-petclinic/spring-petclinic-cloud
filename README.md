@@ -185,7 +185,7 @@ wavefront-proxy     ClusterIP      10.7.253.85    <none>        2878/TCP,9411/TC
 Verify the wavefront proxy is running:
 
 ```
-✗ kubectl get pods -n spring-petclinic
+✗ kubectl get pods -n spring-pet-clinic
 NAME                              READY   STATUS    RESTARTS   AGE
 wavefront-proxy-dfbd4b695-fdd6t   1/1     Running   0          36s
 
@@ -209,9 +209,9 @@ Deploy the databases:
 ```
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 6.14.3 --set db.name=service_instance_db
-helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
-helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
+helm install vets-db-mysql bitnami/mysql --namespace spring-pet-clinic --version 6.14.3 --set db.name=service_instance_db
+helm install visits-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-pet-clinic  --version 6.14.3 --set db.name=service_instance_db
 ```
 
 ### Deploying the application
@@ -226,7 +226,7 @@ Our deployment YAMLs have a placeholder called `REPOSITORY_PREFIX` so we'll be a
 Verify the pods are deployed:
 
 ```bash
-✗ kubectl get pods -n spring-petclinic 
+✗ kubectl get pods -n spring-pet-clinic 
 NAME                                 READY   STATUS    RESTARTS   AGE
 api-gateway-585fff448f-q45jc         1/1     Running   0          4m20s
 customers-db-mysql-master-0          1/1     Running   0          11m
@@ -244,7 +244,7 @@ wavefront-proxy-dfbd4b695-fdd6t      1/1     Running   0          14m
 Get the `EXTERNAL-IP` of the API Gateway:
 
 ```
-✗ kubectl get svc -n spring-petclinic api-gateway 
+✗ kubectl get svc -n spring-pet-clinic api-gateway 
 NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
 api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
 ```
