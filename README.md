@@ -161,7 +161,7 @@ kubectl apply -f k8s/init-namespace/
 Create a Kubernetes secret to store the URL and API Token of Wavefront (replace values with your own real ones):
 
 ```
-kubectl create secret generic wavefront -n spring-petclinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
+kubectl create secret generic wavefront -n spring-pet-clinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
 ```
 
 Create the Wavefront proxy pod, and the various Kubernetes services that will be used later on by our deployments:
