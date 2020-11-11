@@ -173,7 +173,7 @@ kubectl apply -f k8s/init-services
 Verify the services are available:
 
 ```
-✗ kubectl get svc -n spring-pet-clinic
+✗ kubectl get svc -n spring-petclinic
 NAME                TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
 api-gateway         LoadBalancer   10.7.250.24    <pending>     80:32675/TCP        36s
 customers-service   ClusterIP      10.7.245.64    <none>        8080/TCP            36s
