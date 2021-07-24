@@ -10,6 +10,7 @@ This fork also demostrates the use of free distributed tracing with Tanzu Observ
 
 
 ## Understanding the Spring Petclinic application
+--------------------------------
 
 [See the presentation of the Spring Petclinic Framework version](http://fr.slideshare.net/AntoineRey/spring-framework-petclinic-sample-application)
 
