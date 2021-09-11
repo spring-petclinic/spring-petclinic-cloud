@@ -17,4 +17,8 @@ target/
 # Branch switching
 generated/
 .DS_Store
+k8s/.DS_Store
+k8s/init-namespace/.DS_Store
+spring-petclinic-api-gateway/.DS_Store
+spring-petclinic-customers-service/src/.DS_Store
 .vscode/settings.json
