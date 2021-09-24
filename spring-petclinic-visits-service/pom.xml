@@ -24,7 +24,7 @@
 		<spring-cloud.version>Hoxton.SR6</spring-cloud.version>
 		<wavefront.version>2.0.1-SNAPSHOT</wavefront.version>
 
-		<spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/visits-service</spring-boot.build-image.imageName>
+		<spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service</spring-boot.build-image.imageName>
 	</properties>
 
 	<dependencies>
@@ -170,7 +170,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<!-- Spring Boot Actuator displays build-related information if a 
+						<!-- Spring Boot Actuator displays build-related information if a
 							META-INF/build-info.properties file is present -->
 						<goals>
 							<goal>build-info</goal>

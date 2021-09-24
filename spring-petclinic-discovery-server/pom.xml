@@ -16,7 +16,7 @@
     </parent>
 
     <properties>
-        <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/discovery-service</spring-boot.build-image.imageName>
+        <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-discovery-service</spring-boot.build-image.imageName>
         <spring-cloud.version>Hoxton.SR6</spring-cloud.version>
     </properties>
 
@@ -106,7 +106,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- Spring Boot Actuator displays build-related information if a 
+                        <!-- Spring Boot Actuator displays build-related information if a
                             META-INF/build-info.properties file is present -->
                         <goals>
                             <goal>build-info</goal>
