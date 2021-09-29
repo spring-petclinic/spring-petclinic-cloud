@@ -1,3 +1,26 @@
+- [Distributed version of the Spring PetClinic - adapted for Cloud Foundry and Kubernetes](#distributed-version-of-the-spring-petclinic---adapted-for-cloud-foundry-and-kubernetes)
+  * [Understanding the Spring Petclinic application](#understanding-the-spring-petclinic-application)
+  * [Compiling and pushing to Cloud Foundry:](#compiling-and-pushing-to-cloud-foundry-)
+  * [Compiling and pushing to Kubernetes](#compiling-and-pushing-to-kubernetes)
+    + [Choose your Docker registry](#choose-your-docker-registry)
+    + [Setting things up in Kubernetes](#setting-things-up-in-kubernetes)
+    + [Settings up databases with helm](#settings-up-databases-with-helm)
+    + [Deploying the application](#deploying-the-application)
+  * [Starting services locally without Docker](#starting-services-locally-without-docker)
+  * [Starting services locally with docker-compose](#starting-services-locally-with-docker-compose)
+  * [In case you find a bug/suggested improvement for Spring Petclinic Microservices](#in-case-you-find-a-bug-suggested-improvement-for-spring-petclinic-microservices)
+  * [Database configuration](#database-configuration)
+    + [Start a MySql database](#start-a-mysql-database)
+    + [Use the Spring 'mysql' profile](#use-the-spring--mysql--profile)
+  * [Custom metrics monitoring](#custom-metrics-monitoring)
+    + [Using Prometheus](#using-prometheus)
+    + [Using Grafana with Prometheus](#using-grafana-with-prometheus)
+    + [Custom metrics](#custom-metrics)
+  * [Looking for something in particular?](#looking-for-something-in-particular-)
+  * [Interesting Spring Petclinic forks](#interesting-spring-petclinic-forks)
+- [Contributing](#contributing)
+
+
 # Distributed version of the Spring PetClinic - adapted for Cloud Foundry and Kubernetes 
 
 [![Build Status](https://travis-ci.org/spring-petclinic/spring-petclinic-cloud.svg?branch=master)](https://travis-ci.org/spring-petclinic/spring-petclinic-cloud/) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
