@@ -23,3 +23,11 @@ db:
   ## ref: https://github.com/bitnami/bitnami-docker-mysql#creating-a-database-on-first-run
   ##
   name: service_instance_db
+
+## Replication configuration
+##
+replication:
+  ## Enable replication. This enables the creation of replicas of MySQL. If false, only a
+  ## master deployment would be created
+  ##
+  enabled: false
