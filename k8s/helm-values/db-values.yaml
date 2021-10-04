@@ -27,7 +27,8 @@ db:
 ## Replication configuration
 ##
 replication:
-  ## Enable replication. This enables the creation of replicas of MySQL. If false, only a
-  ## master deployment would be created
+  ## Enable replication.
+  ## If use Production, then enabled: true
+  ## If use Development, Testing, Staging, Demo, then enabled: false
   ##
   enabled: false
