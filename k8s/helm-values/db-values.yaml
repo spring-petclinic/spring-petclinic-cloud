@@ -2,24 +2,22 @@
 ##
 clusterDomain: <DOMAIN>
 
-## Admin (root) credentials
+## MySQL Authentication parameters
 ##
-root:
-  ## MySQL admin password
-  ## ref: https://github.com/bitnami/bitnami-docker-mysql#setting-the-root-password-on-first-run
+auth:
+  ## @param auth.rootPassword Password for the `root` user. Ignored if existing secret is provided
+  ## ref: https://github.com/bitnami/bitnami-docker-mysql#setting-the-root-password-on-first-run  
+  rootPassword: <PASSWORD>
+
+  ## @param auth.username Name for a custom user to create
+  ## ref: https://github.com/bitnami/bitnami-docker-mysql/blob/master/README.md#creating-a-database-user-on-first-run
+  ##
+  username: admin
+
+  ## @param auth.password Password for the new user. Ignored if existing secret is provided
   ##
   password: <PASSWORD>
- 
-## Custom user/db credentials
-##
-db:
-  ## MySQL username and password
-  ## ref: https://github.com/bitnami/bitnami-docker-mysql#creating-a-database-user-on-first-run
-  ## Note that this user should be different from the MySQL replication user (replication.user)
-  ##
-  user: admin
-  password: <PASSWORD>
-  ## Database to create
-  ## ref: https://github.com/bitnami/bitnami-docker-mysql#creating-a-database-on-first-run
-  ##
-  name: service_instance_db
+
+  ## @param auth.database Name for a custom database to create
+  ## ref: https://github.com/bitnami/bitnami-docker-mysql/blob/master/README.md#creating-a-database-on-first-run
+  database: service_instance_db
