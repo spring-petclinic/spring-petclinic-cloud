@@ -2,8 +2,6 @@
 echo "Before run script:"
 echo "Need export docker password. Example: export PASSWORD=you-password-docker-account"
 
-export REPOSITORY_PREFIX=harbor.myregistry.com/demo
-
 if [[ "$REPOSITORY_PREFIX" == *\/* ]]
 then
   echo "Need export docker-username variable. Example: export USERNAME=you-docker-username"
