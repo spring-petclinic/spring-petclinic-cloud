@@ -43,21 +43,21 @@ deploy:
     - name: customers-db-mysql
       chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
       valuesFiles: 
-        - customers-db-values.yaml
+        - k8s/helm-values/db-values.yaml
       namespace: spring-petclinic
       remote: true
       wait: true
     - name: vets-db-mysql
       chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
       valuesFiles: 
-        - vets-db-values.yaml
+        - k8s/helm-values/db-values.yaml
       namespace: spring-petclinic
       remote: true
       wait: true
     - name: visits-db-mysql
       chartPath: bitnami/mysql #Change to your local ChartRepo if appropriate -> kubeapps/mysql
       valuesFiles: 
-        - visits-db-values.yaml
+        - k8s/helm-values/db-values.yaml
       namespace: spring-petclinic
       remote: true
       wait: true
