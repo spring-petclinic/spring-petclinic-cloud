@@ -1,16 +1,18 @@
+#!/bin/bash
+
 # This will create a regcreds file to apply to the spring-petclinic namespace
 
 if [ -z "$PASSWORD" ]
 then
-  echo "Need export docker password. Example: export PASSWORD=you-password-docker-account"
+  echo "Need export docker password. Example: export PASSWORD=your-password-docker-account"
   exit 0
 fi
 
 if [ -z "$REPOSITORY_PREFIX" ]
 then
   echo "Need export REPOSITORY_PREFIX"
-  echo "If you use private registry, then REPOSITORY_PREFIX is path to you private registry. Example: export REPOSITORY_PREFIX=harbor.myregistry.com/demo"
-  echo "If you use dockerhub, then REPOSITORY_PREFIX is you account on dockerhub. Example: export REPOSITORY_PREFIX=odedia"
+  echo "If you using private registry, then REPOSITORY_PREFIX is path to you private registry. Example: export REPOSITORY_PREFIX=harbor.myregistry.com/demo"
+  echo "If you using dockerhub, then REPOSITORY_PREFIX is you account on dockerhub. Example: export REPOSITORY_PREFIX=odedia"
   exit 0
 fi
 
