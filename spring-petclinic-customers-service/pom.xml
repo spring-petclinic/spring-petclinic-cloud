@@ -16,7 +16,7 @@
 	<packaging>jar</packaging>
 	<description>Spring PetClinic Customers Service</description>
 
-	
+
 	<properties>
 		<java.version>11</java.version>
 		<assertj.version>3.11.1</assertj.version>
@@ -26,7 +26,7 @@
 		<wavefront.version>2.0.1-SNAPSHOT</wavefront.version>
 
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-		<spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/customers-service</spring-boot.build-image.imageName>
+		<spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-customers-service</spring-boot.build-image.imageName>
 	</properties>
 
 	<dependencies>
@@ -260,7 +260,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<!-- Spring Boot Actuator displays build-related information if a 
+						<!-- Spring Boot Actuator displays build-related information if a
 							META-INF/build-info.properties file is present -->
 						<goals>
 							<goal>build-info</goal>

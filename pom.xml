@@ -40,16 +40,9 @@
 					<plugin>
 						<groupId>org.springframework.boot</groupId>
 						<artifactId>spring-boot-maven-plugin</artifactId>
-						<configuration>
-							<configuration>
-								<image>
-									<name>odedia/${project.artifactId}</name>
-								</image>
-							</configuration>
-						</configuration>
 						<executions>
 							<execution>
-								<!-- Spring Boot Actuator displays build-related information if a 
+								<!-- Spring Boot Actuator displays build-related information if a
 									META-INF/build-info.properties file is present -->
 								<goals>
 									<goal>build-info</goal>
@@ -66,7 +59,7 @@
 						</executions>
 					</plugin>
 
-					<!-- Spring Boot Actuator displays build-related information if a META-INF/build-info.properties 
+					<!-- Spring Boot Actuator displays build-related information if a META-INF/build-info.properties
 						file is present -->
 					<plugin>
 						<groupId>pl.project13.maven</groupId>

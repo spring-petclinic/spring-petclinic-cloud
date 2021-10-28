@@ -18,7 +18,7 @@ spec:
         app: api-gateway
     spec:
       containers:
-      - image: ${REPOSITORY_PREFIX}/api-gateway:latest
+      - image: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-api-gateway:latest
         name: api-gateway
         imagePullPolicy: Always
         livenessProbe:
