@@ -110,11 +110,11 @@ Access your route (like `api-gateway.apps.mysite.com` above) to see the applicat
 
 Access the one-time URL you received when bootstraping Wavefront to see Zipkin traces and other monitoring of your microservices:
 
-![Wavefront dashboard scree](./docs/wavefront-summary.png)
+![Wavefront dashboard screen](./docs/wavefront-summary.png)
 
 Since we've included `brave.mysql8` in our `pom.xml`, the traces even show the various DB queries traces:
 
-![Wavefront dashboard scree](./docs/wavefront-traces.png)
+![Wavefront dashboard screen](./docs/wavefront-traces.png)
 
 
 
@@ -128,19 +128,19 @@ You need to define your target Docker registry. Make sure you're already logged 
 
 Setup an env varible to target your Docker registry. If you're targeting Docker hub, simple provide your username, for example:
 
-```
+```bash
 export REPOSITORY_PREFIX=odedia
 ```
 
 For other Docker registries, provide the full URL to your repository, for example:
 
-```
+```bash
 export REPOSITORY_PREFIX=harbor.myregistry.com/demo
 ```
 
 One of the neat features in Spring Boot 2.3 is that it can leverage [Cloud Native Buildpacks](https://buildpacks.io) and [Paketo Buildpacks](https://paketo.io) to build production-ready images for us. Since we also configured the `spring-boot-maven-plugin` to use `layers`, we'll get optimized layering of the various components that build our Spring Boot app for optimal image caching. What this means in practice is that if we simple change a line of code in our app, it would only require us to push the layer containing our code and not the entire uber jar. To build all images and pushing them to your registry, run:
 
-```
+```bash
 mvn spring-boot:build-image -Pk8s -DREPOSITORY_PREFIX=${REPOSITORY_PREFIX} && ./scripts/pushImages.sh
 ```
 
@@ -154,25 +154,25 @@ Make sure you're targeting your Kubernetes cluster
 
 Create the `spring-petclinic` namespace for Spring petclinic:
 
-```
+```bash
 kubectl apply -f k8s/init-namespace/ 
 ```
 
 Create a Kubernetes secret to store the URL and API Token of Wavefront (replace values with your own real ones):
 
-```
+```bash
 kubectl create secret generic wavefront -n spring-petclinic --from-literal=wavefront-url=https://wavefront.surf --from-literal=wavefront-api-token=2e41f7cf-1111-2222-3333-7397a56113ca
 ```
 
 Create the Wavefront proxy pod, and the various Kubernetes services that will be used later on by our deployments:
 
-```
+```bash
 kubectl apply -f k8s/init-services
 ```
 
 Verify the services are available:
 
-```
+```bash
 ✗ kubectl get svc -n spring-petclinic
 NAME                TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)             AGE
 api-gateway         LoadBalancer   10.7.250.24    <pending>     80:32675/TCP        36s
@@ -184,7 +184,7 @@ wavefront-proxy     ClusterIP      10.7.253.85    <none>        2878/TCP,9411/TC
 
 Verify the wavefront proxy is running:
 
-```
+```bash
 ✗ kubectl get pods -n spring-petclinic
 NAME                              READY   STATUS    RESTARTS   AGE
 wavefront-proxy-dfbd4b695-fdd6t   1/1     Running   0          36s
@@ -197,7 +197,7 @@ We'll now need to deploy our databases. For that, we'll use helm. You'll need he
 
 Make sure you have a single `default` StorageClass in your Kubernetes cluster:
 
-```
+```bash
 ✗ kubectl get sc
 NAME                 PROVISIONER            AGE
 standard (default)   kubernetes.io/gce-pd   6h11m
@@ -206,22 +206,21 @@ standard (default)   kubernetes.io/gce-pd   6h11m
 
 Deploy the databases:
 
-```
+```bash
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 6.14.3 --set db.name=service_instance_db
-helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
-helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 6.14.3 --set db.name=service_instance_db
+helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 8.8.8 --set auth.database=service_instance_db
+helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8.8.8 --set auth.database=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8.8.8 --set auth.database=service_instance_db
 ```
 
 ### Deploying the application
 
 Our deployment YAMLs have a placeholder called `REPOSITORY_PREFIX` so we'll be able to deploy the images from any Docker registry. Sadly, Kubernetes doesn't support environment variables in the YAML descriptors. We have a small script to do it for us and run our deployments:
 
-```
+```bash
 ./scripts/deployToKubernetes.sh
 ```
-
 
 Verify the pods are deployed:
 
@@ -229,31 +228,28 @@ Verify the pods are deployed:
 ✗ kubectl get pods -n spring-petclinic 
 NAME                                 READY   STATUS    RESTARTS   AGE
 api-gateway-585fff448f-q45jc         1/1     Running   0          4m20s
-customers-db-mysql-master-0          1/1     Running   0          11m
-customers-db-mysql-slave-0           1/1     Running   0          11m
+customers-db-mysql-0                 1/1     Running   0          11m
 customers-service-5d7d686654-kpcmx   1/1     Running   0          4m19s
-vets-db-mysql-master-0               1/1     Running   0          11m
-vets-db-mysql-slave-0                1/1     Running   0          11m
+vets-db-mysql-0                      1/1     Running   0          11m
 vets-service-85cb8677df-l5xpj        1/1     Running   0          4m2s
-visits-db-mysql-master-0             1/1     Running   0          11m
-visits-db-mysql-slave-0              1/1     Running   0          11m
+visits-db-mysql-0                    1/1     Running   0          11m
 visits-service-654fffbcc7-zj2jw      1/1     Running   0          4m2s
 wavefront-proxy-dfbd4b695-fdd6t      1/1     Running   0          14m
 ```
 
 Get the `EXTERNAL-IP` of the API Gateway:
 
-```
+```bash
 ✗ kubectl get svc -n spring-petclinic api-gateway 
 NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
 api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
 ```
 
-You can now brose to that IP in your browser and see the application running.
+You can now browse to that IP in your browser and see the application running.
 
 You should also see monitoring and traces from Wavefront under the application name `spring-petclinic-k8s`:
 
-![Wavefront dashboard scree](./docs/wavefront-k8s.png)
+![Wavefront dashboard screen](./docs/wavefront-k8s.png)
 
 
 
