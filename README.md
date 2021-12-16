@@ -9,7 +9,7 @@ This fork also demostrates the use of free distributed tracing with Tanzu Observ
 
 
   * [Understanding the Spring Petclinic application](#understanding-the-spring-petclinic-application)
-  * [Compiling and pushing to Cloud Foundry:](#compiling-and-pushing-to-cloud-foundry-)
+  * [Compiling and pushing to Cloud Foundry](#compiling-and-pushing-to-cloud-foundry)
   * [Compiling and pushing to Kubernetes](#compiling-and-pushing-to-kubernetes)
     + [Choose your Docker registry](#choose-your-docker-registry)
     + [Setting things up in Kubernetes](#setting-things-up-in-kubernetes)
@@ -41,9 +41,7 @@ You can then access petclinic here: http://localhost:8080/
 ![Spring Petclinic Microservices screenshot](./docs/application-screenshot.png?lastModify=1596391473)
 
 
-
-
-## Compiling and pushing to Cloud Foundry:
+## Compiling and pushing to Cloud Foundry
 
 The samples below are using Tanzu Application Service (previously Pivotal Cloud Foundry) as the target Cloud Foundry deployment, some adjustments may be needed for other Cloud Foundry distributions.
 
@@ -147,7 +145,7 @@ This get a little bit more complicated when deploying to Kubernetes, since we ne
 
 You need to define your target Docker registry. Make sure you're already logged in by running `docker login <endpoint>` or `docker login` if you're just targeting Docker hub.
 
-Setup an env varible to target your Docker registry. If you're targeting Docker hub, simple provide your username, for example:
+Setup an env variable to target your Docker registry. If you're targeting Docker hub, simple provide your username, for example:
 
 ```bash
 export REPOSITORY_PREFIX=odedia
@@ -280,11 +278,12 @@ You should also see monitoring and traces from Wavefront under the application n
 
 
 
-
-
 ## Starting services locally without Docker
 
-Every microservice is a Spring Boot application and can be started locally using IDE or `../mvnw spring-boot:run` command. Please note that supporting services (Config and Discovery Server) must be started before any other application (Customers, Vets, Visits and API).
+Every microservice is a Spring Boot application and can be started locally using IDE 
+or with the `../mvnw spring-boot:run -Plocal` command.
+Remember to enable the `local` Maven profile.
+Please note that supporting services (Config and Discovery Server) must be started before any other application (Customers, Vets, Visits and API).
 Startup of Tracing server, Admin server, Grafana and Prometheus is optional.
 If everything goes well, you can access the following services at given location:
 

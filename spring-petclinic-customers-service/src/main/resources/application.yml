@@ -1,24 +1,27 @@
 spring:
-  cloud:
-    config:
-      uri: http://localhost:8888
   application:
-    name: visits-service
+    name: customers-service
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
+
 ---
 spring:
-  profiles: docker
-  cloud:
-    config:
-      uri: http://config-server:8888
+  config:
+    activate:
+      on-profile: docker
+    import: configserver:http://config-server:8888
+
 ---
 spring:
-  profiles: kubernetes
+  config:
+    activate:
+      on-profile: kubernetes
   cloud:
     config:
       enabled: false
     kubernetes:
       reload:
-        strategy: restart-context
+        strategy: restart_context
         enabled: true
       config:
         enabled: true
@@ -29,13 +32,15 @@ management:
       enabled: true
 ---
 spring:
-  profiles: tas4k8s
+  config:
+    activate:
+      on-profile: tas4k8s
   cloud:
     config:
       enabled: false
     kubernetes:
       reload:
-        strategy: restart-context
+        strategy: restart_context
         enabled: true
       config:
         enabled: true
