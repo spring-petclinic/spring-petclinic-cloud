@@ -1,9 +1,8 @@
 spring:
-  cloud:
-    config:
-      uri: http://localhost:8888
   application:
     name: admin-server
+  config:
+    import: optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888/}
 ---
 spring:
   config:

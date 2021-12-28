@@ -16,7 +16,7 @@
         <relativePath/>
     </parent>
     <properties>
-        <spring-boot-admin.version>2.2.2</spring-boot-admin.version>
+        <spring-boot-admin.version>2.5.5</spring-boot-admin.version>
         <spring-cloud.version>2021.0.0</spring-cloud.version>
         <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-admin-server</spring-boot.build-image.imageName>
 
@@ -30,10 +30,6 @@
         </dependency>
 
         <!-- Spring Cloud -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-bootstrap</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
