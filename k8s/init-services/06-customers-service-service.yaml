@@ -8,8 +8,9 @@ metadata:
   namespace: spring-petclinic
 spec:
   ports:
-  - name: "8080"
+  - name: "http"
     port: 8080
+    # appProtocol: "http"
     targetPort: 8080
   selector:
     app: customers-service
