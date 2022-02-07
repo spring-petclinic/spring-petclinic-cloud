@@ -260,7 +260,6 @@
 	</build>
 
 	<profiles>
-
 		<profile>
 			<id>local</id>
 			<dependencies>
@@ -328,14 +327,14 @@
 
 
 		<profile>
-			<id>kubernetes</id>
+			<id>k8s</id>
 	        <activation>
 	            <activeByDefault>true</activeByDefault>
 	        </activation>
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework.cloud</groupId>
-					<artifactId>spring-cloud-starter-kubernetes-client-all</artifactId>
+					<artifactId>spring-cloud-starter-kubernetes-client-config</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
