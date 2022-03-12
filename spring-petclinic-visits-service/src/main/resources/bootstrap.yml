@@ -6,13 +6,17 @@ spring:
     name: visits-service
 ---
 spring:
-  profiles: docker
+  config:
+    activate:
+      on-profile: docker
   cloud:
     config:
       uri: http://config-server:8888
 ---
 spring:
-  profiles: kubernetes
+  config:
+    activate:
+      on-profile: kubernetes
   cloud:
     config:
       enabled: false
@@ -29,7 +33,9 @@ management:
       enabled: true
 ---
 spring:
-  profiles: tas4k8s
+  config:
+    activate:
+      on-profile: tas4k8s
   cloud:
     config:
       enabled: false
