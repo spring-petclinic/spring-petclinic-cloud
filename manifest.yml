@@ -16,7 +16,7 @@ applications:
       - customers-db
       - config
       - registry
-      - wavefront
+#      - wavefront
 
   - name: vets-service
     path: spring-petclinic-vets-service/target/vets-service.jar
@@ -34,7 +34,7 @@ applications:
       - vets-db
       - config
       - registry
-      - wavefront
+#      - wavefront
 
   - name: visits-service
     path: spring-petclinic-visits-service/target/visits-service.jar
@@ -52,7 +52,7 @@ applications:
       - visits-db
       - config
       - registry
-      - wavefront
+#      - wavefront
 
   - name: api-gateway
     path: spring-petclinic-api-gateway/target/api-gateway.jar
@@ -67,4 +67,4 @@ applications:
     services:
       - config
       - registry
-      - wavefront
+#      - wavefront
