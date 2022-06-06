@@ -16,10 +16,10 @@ data:
         mime-types: application/json,text/css,application/javascript
         min-response-size: 2048
 
-#    wavefront:
-#      application:
-#        name: spring-petclinic-k8s
-#      freemium-account: true
+    #wavefront:
+    #  application:
+    #    name: spring-petclinic-k8s
+    #  freemium-account: true
 
     # Logging
     logging.level.org.springframework: INFO
@@ -49,8 +49,8 @@ data:
         export:
           prometheus:
             enabled: true
-#          wavefront:
-#            enabled: true
+          wavefront:
+            enabled: true
 
     customers-service-id: http://customers-service.spring-petclinic.svc.cluster.local:8080
     visits-service-id: http://vists-service.spring-petclinic.svc.cluster.local:8080
@@ -115,4 +115,3 @@ data:
       cache:
         ttl: 60
         heap-size: 101
-

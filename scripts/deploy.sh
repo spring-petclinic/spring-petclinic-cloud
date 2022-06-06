@@ -4,8 +4,8 @@ aws configure set default.region us-east-1
 aws configure set default.output json
 export REPOSITORY_PREFIX=springcommunity
 export LAB_ROLE=arn:aws:iam::218984672742:role/LabRole
-export SUBNET_A=subnet-06588c0a28bbf47cd
-export SUBNET_B=subnet-03eeaa268934e9f58
+export SUBNET_A=subnet-0b9e989d06113198d
+export SUBNET_B=subnet-0935bbb73bd6ae008
 
 # Creating cluster and nodes
 
@@ -70,9 +70,9 @@ kubectl apply -f k8s/init-services
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
-helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 8.8.8 --set auth.database=service_instance_db
-helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8.8.8 --set auth.database=service_instance_db
-helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8.8.8 --set auth.database=service_instance_db
+helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --set auth.database=service_instance_db
+helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic --set auth.database=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic --set auth.database=service_instance_db
 
 # Deploy to Kubernetes
 
