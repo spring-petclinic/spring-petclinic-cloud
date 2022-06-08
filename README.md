@@ -364,6 +364,42 @@ A JMeter load testing script is available to stress the application and generate
 
 ![Grafana metrics dashboard](docs/grafana-custom-metrics-dashboard.png)
 
+## JMeter test plans
+
+Five test plans for JMeter were prepared, and they are included in test-plans folder.
+
+For single user, following requests are made:
+- list all owners
+- add owner
+- get owner details
+- update owner
+- add pet (randomly - add two pets)
+- update pet
+- list all veterinarians
+- add veterinarian visit (randomly - add two visits)
+
+Test plans have different number of parallel users, and differn in how the number of user changes in time. The test schedule for plans can be seen below:
+
+##### Test plan 1:
+
+![petclinic_test_plan_1](https://user-images.githubusercontent.com/49311489/172710875-bd13a215-3f8d-4af0-b93e-c66f584e9972.png)
+
+##### Test plan 2:
+
+![petclinic_test_plan_2](https://user-images.githubusercontent.com/49311489/172713061-f37cec0d-e39d-4bce-a569-874c1429057a.png)
+
+##### Test plan 3:
+
+![petclinic_test_plan_3](https://user-images.githubusercontent.com/49311489/172713129-c2766ab1-6bde-4569-a53f-106b781c5a30.png)
+
+##### Test plan 4:
+
+![petclinic_test_plan_4](https://user-images.githubusercontent.com/49311489/172713150-840e95a6-400a-4c95-a353-836fa735ed04.png)
+
+##### Test plan 5:
+
+![petclinic_test_plan_5](https://user-images.githubusercontent.com/49311489/172713176-fa757c3a-b502-410b-9a5a-c2f69b4a1a5a.png)
+
 ### Using Prometheus
 
 * Prometheus can be accessed from your local machine at http://localhost:9091
