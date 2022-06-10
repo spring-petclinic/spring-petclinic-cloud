@@ -9,3 +9,9 @@
 Set ARN of [LabRole](https://us-east-1.console.aws.amazon.com/iamv2/home?region=us-east-1#/roles/details/LabRole?section=permissions) to `LAB_ROLE` variable. 
 Set two [subnet ID](https://us-east-1.console.aws.amazon.com/vpc/home?region=us-east-1#subnets:) to `SUBNET_A` and `SUBNET_B` variables.
 3. Run `./scripts/deploy.sh` script
+
+# Telemetry
+To see gathered telemetry, run:
+``kubectl get pods --namespace spring-petclinic``
+copy name of a cluster that starts with `simple-collector` and run
+``kubectl logs <cluster-name> --namespace spring-petclinic``

@@ -16,6 +16,8 @@ spec:
     metadata:
       labels:
         app: visits-service
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
       - image: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service:latest

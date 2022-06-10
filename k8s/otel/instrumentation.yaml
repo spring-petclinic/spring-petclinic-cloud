@@ -1,0 +1,24 @@
+apiVersion: opentelemetry.io/v1alpha1
+kind: Instrumentation
+metadata:
+  name: my-instrumentation
+  namespace: spring-petclinic
+spec:
+  env:
+    - name: OTEL_TRACES_EXPORTER
+      value: otlp
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: http://simplest-collector:4317
+    - name: OTEL_EXPORTER_OTLP_TIMEOUT
+      value: "20"
+    - name: SPLUNK_TRACE_RESPONSE_HEADER_ENABLED
+      value: "true"
+  exporter:
+    endpoint: http://simplest-collector:4317
+  sampler:
+    type: always_on
+    argument: "0.25"
+  java:
+    env:
+      - name: OTEL_JAVAAGENT_DEBUG
+        value: "true"
