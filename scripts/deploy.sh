@@ -3,9 +3,9 @@
 aws configure set default.region us-east-1
 aws configure set default.output json
 export REPOSITORY_PREFIX=springcommunity
-export LAB_ROLE=arn:aws:iam::519536199361:role/LabRole
-export SUBNET_A=subnet-06d99b3fd3c78bc4c
-export SUBNET_B=subnet-0d92df0a9d09a6d7c
+export LAB_ROLE=arn:aws:iam::218984672742:role/LabRole
+export SUBNET_A=subnet-050c939600d1752a6
+export SUBNET_B=subnet-07a651bbf4cd7f1ba
 
 # Creating cluster and nodes
 
@@ -52,6 +52,20 @@ while : ; do
 	fi
 	sleep 10
 done
+
+# Istio setup
+
+istioctl install --set profile=demo
+kubectl label namespace spring-petclinic istio-injection=enabled
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samples/addons/prometheus.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samples/addons/grafana.yaml
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samples/addons/jaeger.yaml
+
+# kubectl -n istio-system get pods
+# kubectl -n istio-system get svc
+# kubectl -n istio-system get svc istio-ingressgateway
+
+# Setting things up in Kubernetes
 
 kubectl apply -f k8s/init-namespace/
 kubectl apply -f k8s/init-services

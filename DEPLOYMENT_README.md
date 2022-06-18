@@ -1,6 +1,7 @@
 # Prerequisites
 - [aws-cli v2.5.8](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 - [kubectl v1.23.6](https://kubernetes.io/docs/tasks/tools/)
+- [istio v1.9.0](https://istio.io/latest/docs/setup/getting-started/#download)
 - install **helm v3.8.0** - `./get_helm.sh --version v3.8.0`
 
 # Deployment
