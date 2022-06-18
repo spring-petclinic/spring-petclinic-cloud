@@ -16,6 +16,8 @@ spec:
     metadata:
       labels:
         app: vets-service
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
       - image: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-vets-service:latest

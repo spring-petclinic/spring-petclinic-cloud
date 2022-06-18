@@ -3,9 +3,9 @@
 aws configure set default.region us-east-1
 aws configure set default.output json
 export REPOSITORY_PREFIX=springcommunity
-export LAB_ROLE=arn:aws:iam::218984672742:role/LabRole
-export SUBNET_A=subnet-0b9e989d06113198d
-export SUBNET_B=subnet-0935bbb73bd6ae008
+export LAB_ROLE=arn:aws:iam::519536199361:role/LabRole
+export SUBNET_A=subnet-06d99b3fd3c78bc4c
+export SUBNET_B=subnet-0d92df0a9d09a6d7c
 
 # Creating cluster and nodes
 
@@ -53,8 +53,6 @@ while : ; do
 	sleep 10
 done
 
-# Setting things up in Kubernetes
-
 kubectl apply -f k8s/init-namespace/
 kubectl apply -f k8s/init-services
 
@@ -74,11 +72,17 @@ helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --set auth
 helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic --set auth.database=service_instance_db
 helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic --set auth.database=service_instance_db
 
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.8.0/cert-manager.yaml
+kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml
+
 # Deploy to Kubernetes
 
 cat ./k8s/*.yaml | \
 sed 's#\${REPOSITORY_PREFIX}'"#${REPOSITORY_PREFIX}#g" | \
 kubectl apply -f -
+
+kubectl apply -f k8s/otel/collector.yaml
+kubectl apply -f k8s/otel/instrumentation.yaml
 
 # Verification of deployment
 # > kubectl get pods -n spring-petclinic 
@@ -95,6 +99,11 @@ kubectl apply -f -
 # kubectl get svc -n spring-petclinic api-gateway
 # NAME          TYPE           CLUSTER-IP    EXTERNAL-IP      PORT(S)        AGE
 # api-gateway   LoadBalancer   10.7.250.24   34.1.2.22   80:32675/TCP   18m
+
+# restart all pods to apply instrumentation
+kubectl get pods -n default --no-headers=true --namespace spring-petclinic \
+| awk '/api-gateway|customers-service|vets-service|visits-service/{print $1}'\
+| xargs  kubectl delete -n default pod --namespace spring-petclinic
 
 while : ; do
   EXTERNAL_IP=$(kubectl get svc -n spring-petclinic api-gateway | sed -n '2p' | awk '{ print $4 }')
