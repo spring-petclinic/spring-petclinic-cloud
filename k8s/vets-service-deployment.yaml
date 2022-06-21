@@ -18,6 +18,10 @@ spec:
         app: vets-service
       annotations:
         instrumentation.opentelemetry.io/inject-java: "true"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+        prometheus.io/scheme: http
     spec:
       containers:
       - image: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-vets-service:latest

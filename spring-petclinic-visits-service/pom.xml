@@ -103,6 +103,10 @@
 			<groupId>io.zipkin.brave</groupId>
 			<artifactId>brave-instrumentation-mysql8</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

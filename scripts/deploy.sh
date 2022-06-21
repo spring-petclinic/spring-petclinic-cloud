@@ -2,10 +2,10 @@
 
 aws configure set default.region us-east-1
 aws configure set default.output json
-export REPOSITORY_PREFIX=springcommunity
-export LAB_ROLE=arn:aws:iam::218984672742:role/LabRole
-export SUBNET_A=subnet-050c939600d1752a6
-export SUBNET_B=subnet-07a651bbf4cd7f1ba
+export REPOSITORY_PREFIX=iffern
+export LAB_ROLE=arn:aws:iam::139993199880:role/LabRole
+export SUBNET_A=subnet-071d80a84507fe0c6
+export SUBNET_B=subnet-0976a6e6249240d33
 
 # Creating cluster and nodes
 
@@ -55,6 +55,8 @@ done
 
 # Istio setup
 
+kubectl apply -f k8s/init-namespace/
+
 istioctl install --set profile=demo
 kubectl label namespace spring-petclinic istio-injection=enabled
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samples/addons/prometheus.yaml
@@ -67,7 +69,6 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.13/samp
 
 # Setting things up in Kubernetes
 
-kubectl apply -f k8s/init-namespace/
 kubectl apply -f k8s/init-services
 
 # Verification of services:
