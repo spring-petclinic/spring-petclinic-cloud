@@ -3,7 +3,7 @@ node {
         sh 'echo hello'
     }
     stage('learning') {
-        git url: 'https://github.com/GitPracticeRepo/game-of-life.git',
+        git url: 'https://github.com/srikanthreddygajjala070/spring-petclinic-cloud.git',
             branch: 'master'
     }
 }
