@@ -7,6 +7,6 @@ node {
             branch: 'NEW_BRANCH'
     }
     stage('build') {
-        C:\Windows\System32\bash.exe 'mvn package'
+        bash.exe 'mvn package'
     }
 }
