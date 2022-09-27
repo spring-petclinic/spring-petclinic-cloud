@@ -7,6 +7,6 @@ node {
             branch: 'NEW_BRANCH'
     }
     stage('build') {
-        'mvn package'
+        sh 'mvn package'
     }
 }
