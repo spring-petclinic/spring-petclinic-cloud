@@ -1,0 +1,20 @@
+replicaCount: 1
+
+nameOverride: ""
+
+image:
+  repository: docker.io/springcommunity/spring-petclinic-cloud-customers-service
+  pullPolicy: IfNotPresent #Always
+  tag: "" #image tag should be set in Chart.yaml - but where it's a strange tag, just override here
+
+service:
+  type: ClusterIP
+  port: 80
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "" #Leave empty and it'll default to the name of the app, thanks to the _helpers.tpl
+
+podSecurityContext: {}
+  # fsGroup: 2000

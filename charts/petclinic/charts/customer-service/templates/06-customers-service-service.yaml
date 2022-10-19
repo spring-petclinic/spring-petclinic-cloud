@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: customers-service
+  name: customers-service
+  namespace: spring-petclinic
+spec:
+  ports:
+  - name: "http"
+    port: 8080
+    # appProtocol: "http"
+    targetPort: 8080
+  selector:
+    app: customers-service
+status:
+  loadBalancer: {}

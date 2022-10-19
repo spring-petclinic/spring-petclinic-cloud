@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vets-service
+  name: vets-service
+  namespace: spring-petclinic
+spec:
+  ports:
+  - name: "http"
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: vets-service
+status:
+  loadBalancer: {}

@@ -20,15 +20,21 @@
 		<java.version>11</java.version>
 		<assertj.version>3.11.1</assertj.version>
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
-		<spring-boot.version>2.6.3</spring-boot.version>
-		<spring-cloud.version>2021.0.0</spring-cloud.version>
+		<spring-boot.version>2.7.4</spring-boot.version>
+		<spring-cloud.version>2021.0.4</spring-cloud.version>
 		<wavefront.version>2.2.2</wavefront.version>
-
 		<spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service</spring-boot.build-image.imageName>
         <spring-cloud-services.version>3.3.0</spring-cloud-services.version>
+		<appcliation-insights.version>3.4.1</appcliation-insights.version>
     </properties>
 
 	<dependencies>
+		 <!-- App Insight -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>applicationinsights-runtime-attach</artifactId>
+            <version>${appcliation-insights.version}</version>
+        </dependency>
 		<!-- Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -160,6 +166,11 @@
                   <layers>
                     <enabled>true</enabled>
                   </layers>
+				  <image>
+					<env>
+						<BP_JVM_TYPE>JDK</BP_JVM_TYPE>
+					</env>
+				  </image>
 				</configuration>
 				<executions>
 					<execution>

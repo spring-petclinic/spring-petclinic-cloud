@@ -1,5 +1,3 @@
-# Need to change YOUR_CLUSTER and YOUR_API_TOKEN accordingly
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,7 +18,7 @@ spec:
     spec:
       containers:
       - name: wavefront-proxy
-        image: wavefronthq/proxy:latest
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: Always
         env:
         - name: WAVEFRONT_URL
@@ -44,23 +42,3 @@ spec:
           protocol: TCP
         securityContext:
           privileged: false
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: wavefront-proxy
-  labels:
-    app: wavefront-proxy
-  namespace: spring-petclinic
-spec:
-  ports:
-  - name: wavefront
-    port: 2878
-    protocol: TCP
-  # Uncomment the below lines to consume Zipkin/Istio traces
-  - name: http
-    port: 9411
-    targetPort: 9411
-    protocol: TCP
-  selector:
-    app: wavefront-proxy

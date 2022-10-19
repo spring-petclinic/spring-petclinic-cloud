@@ -1,4 +1,4 @@
-FROM openjdk:11-jre as builder
+FROM openjdk:11-jdk as builder
 WORKDIR application
 ARG ARTIFACT_NAME
 COPY ${ARTIFACT_NAME}.jar application.jar
@@ -12,7 +12,7 @@ RUN chmod +x dockerize
 
 
 # wget is not installed on adoptopenjdk:11-jre-hotspot
-FROM adoptopenjdk:11-jre-hotspot
+FROM openjdk:11-jdk
 
 WORKDIR application
 

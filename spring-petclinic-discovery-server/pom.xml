@@ -11,17 +11,26 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.3</version>
+        <version>2.7.4</version>
         <relativePath/>
     </parent>
 
     <properties>
         <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-discovery-service</spring-boot.build-image.imageName>
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
-        <spring-cloud-services.version>3.3.0</spring-cloud-services.version>
+   
+		<spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-services.version>3.5.0</spring-cloud-services.version>
+        <appcliation-insights.version>3.4.1</appcliation-insights.version>
     </properties>
 
     <dependencies>
+        <!-- App Insight -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>applicationinsights-runtime-attach</artifactId>
+            <version>${appcliation-insights.version}</version>
+        </dependency>
+            
         <!-- Spring Boot -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

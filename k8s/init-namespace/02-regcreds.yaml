@@ -1,0 +1,8 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJhenVyZXNwcmluZ2Fjci5henVyZWNyLmlvIjp7InVzZXJuYW1lIjoiYXp1cmVzcHJpbmdhY3IiLCJwYXNzd29yZCI6IkZxY21yOW5hMGllbG1Oby9YbTlXa25PZlJIcEh3SkVxIiwiYXV0aCI6IllYcDFjbVZ6Y0hKcGJtZGhZM0k2Um5GamJYSTVibUV3YVdWc2JVNXZMMWh0T1ZkcmJrOW1Va2h3U0hkS1JYRT0ifX19
+kind: Secret
+metadata:
+  name: regcred
+  namespace: spring-petclinic
+type: kubernetes.io/dockerconfigjson

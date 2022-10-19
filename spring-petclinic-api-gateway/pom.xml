@@ -20,9 +20,9 @@
 		<java.version>11</java.version>
 		<assertj.version>3.11.1</assertj.version>
 
-		<spring-boot.version>2.6.3</spring-boot.version>
-		<spring-cloud.version>2021.0.0</spring-cloud.version>
-        <spring-cloud-services.version>3.3.0</spring-cloud-services.version>
+		<spring-boot.version>2.7.4</spring-boot.version>
+		<spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-services.version>3.5.0</spring-cloud-services.version>
 		<wavefront.version>2.2.2</wavefront.version>
 
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
@@ -34,10 +34,16 @@
 		<webjars-angular-ui-router.version>1.0.3</webjars-angular-ui-router.version>
 		<wro4j.version>1.8.0</wro4j.version>
         <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-api-gateway</spring-boot.build-image.imageName>
-
+		<appcliation-insights.version>3.4.1</appcliation-insights.version>
 	</properties>
 
-	<dependencies>
+    <dependencies>
+        <!-- App Insight -->
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>applicationinsights-runtime-attach</artifactId>
+            <version>${appcliation-insights.version}</version>
+        </dependency>
 
 		<!-- Spring Boot -->
 		<dependency>
@@ -237,6 +243,11 @@
 			      <layers>
 			        <enabled>true</enabled>
 			      </layers>
+				  <image>
+					<env>
+						<BP_JVM_TYPE>JDK</BP_JVM_TYPE>
+					</env>
+				  </image>
 				</configuration>
 				<executions>
 					<execution>

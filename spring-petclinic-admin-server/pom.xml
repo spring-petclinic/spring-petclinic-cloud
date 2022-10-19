@@ -12,13 +12,14 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.6.3</version>
+        <version>2.7.4</version>
         <relativePath/>
     </parent>
     <properties>
-        <spring-boot-admin.version>2.5.5</spring-boot-admin.version>
-        <spring-cloud.version>2021.0.0</spring-cloud.version>
-        <spring-cloud-services.version>3.3.0</spring-cloud-services.version>
+        <spring-boot-admin.version>2.7.6</spring-boot-admin.version>
+		<spring-cloud.version>2021.0.4</spring-cloud.version>
+        <spring-cloud-services.version>3.5.0</spring-cloud-services.version>
+        
 
         <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-admin-server</spring-boot.build-image.imageName>
     </properties>
