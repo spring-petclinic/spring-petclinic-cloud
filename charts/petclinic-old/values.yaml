@@ -1,0 +1,14 @@
+
+visits:
+
+  replicaCount: 1
+  nameOverride: ""
+  image:
+    repository: ${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service
+    pullPolicy: Always
+    tag: latest
+    
+  service:
+    type: ClusterIP
+    port: 80
+  podSecurityContext: {}

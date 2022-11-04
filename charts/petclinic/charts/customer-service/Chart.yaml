@@ -1,6 +1,0 @@
-apiVersion: v2
-name: customer-service
-description: A Helm chart for your app
-type: application
-version: 0.1.0 #chart version
-appVersion: "latest" #your app version (used as an image tag)

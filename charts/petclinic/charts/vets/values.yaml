@@ -1,20 +1,103 @@
+# Default values for visits.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
 replicaCount: 1
 
-nameOverride: ""
-
 image:
-  repository: docker.io/springcommunity/spring-petclinic-cloud-vets-service
-  pullPolicy: IfNotPresent #Always
-  tag: "" #image tag should be set in Chart.yaml - but where it's a strange tag, just override here
+  repository: azurespringacr.azurecr.io/petclinic/spring-petclinic-cloud-vets-service
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: latest
 
-service:
-  type: ClusterIP
-  port: 80
+imagePullSecrets: 
+  - name: regcred
+
+env:
+  - name: SPRING_PROFILES_ACTIVE
+    value: kubernetes
+  - name: SPRING_DATASOURCE_URL
+    value: jdbc:mysql://vets-db-mysql.spring-petclinic.svc.cluster.local:3306/service_instance_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=vets-db
+  - name: SPRING_DATASOURCE_USERNAME
+    value: root
+  - name: SPRING_DATASOURCE_PASSWORD
+    valueFrom:
+        secretKeyRef:
+          name: vets-db-mysql
+          key: mysql-root-password
+  - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
+    value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
+  - name: APPINSIGHTS_INSTRUMENTATIONKEY
+    value: c91aa53f-77a3-4009-b9f0-2c8a1f513596  
+
+nameOverride: "vets-service"
+fullnameOverride: "vets-service"
 
 serviceAccount:
-  create: true
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
   annotations: {}
-  name: "" #Leave empty and it'll default to the name of the app, thanks to the _helpers.tpl
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

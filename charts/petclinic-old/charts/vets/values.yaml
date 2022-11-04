@@ -3,7 +3,7 @@ replicaCount: 1
 nameOverride: ""
 
 image:
-  repository: docker.io/wavefronthq/proxy
+  repository: docker.io/springcommunity/spring-petclinic-cloud-vets-service
   pullPolicy: IfNotPresent #Always
   tag: "" #image tag should be set in Chart.yaml - but where it's a strange tag, just override here
 
