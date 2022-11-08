@@ -1,0 +1,219 @@
+# This workflow performs the following:
+# - Database configuration
+# - Provisioning Azure Services  
+# - Create the Microservices Spring-Petclinic - build with Maven
+# - Create an Azure Container Registry 
+# - Push your app to the container registry
+# - Create an Azure Kubernetes Services (AKS) Cluster
+# - Deploy each of the Microservies to your AKS cluster
+# - Verify your container images
+
+# Secrets required to be in place:
+# - AZURE_CREDENTIALS 
+
+name: AKS Cluster Microservices with Enterprise Networking Architecture Deployment
+
+on:
+  # Triggers the workflow on push events on the main branch
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '*.md'
+      - '*.png'
+
+env:
+  LOCATION: 'eastus'
+  HUB_VNET: 'hub-vnet'
+  HUB_RG: 'petclinic-hub-eastus'
+  SPOKE_RG: 'petclinic-spoke-eastus'
+  SPOKE_VNET: 'spoke-vnet'
+  FW_PRIVATE_IP: '10.0.0.4'
+  ROUTE_TABLE_NAME: 'aks-udr'
+  ACR_NAME: 'petclinicaksacraz'
+  CLUSTER_NAME: 'aksspoke'
+  JUMPBOX_ADMIN_USER: 'aksadmin'
+  JUMPBOX_ADMIN_PWD: 'aksadmin123**'
+
+jobs: 
+  hub_networking:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        environment: 'AzureCloud'
+    - name: Azure CLI -Deploy Bicep Files
+      uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create -l ${{ env.LOCATION }} -n ${{ env.HUB_RG }}
+          az group create -l ${{ env.LOCATION }} -n ${{ env.SPOKE_RG }}
+    - name: hub networking
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.HUB_RG }}
+        template: ./infra/aks-bicep/modules/hub_network.bicep
+        parameters: >
+          ./infra/aks-bicep/action_params/hub_network.parameters.json
+          location="${{ env.LOCATION }}"
+          hubVnetName="${{ env.HUB_VNET }}"
+        deploymentName: hub-networking-github-actions
+
+  deploy_firewall:
+    needs: hub_networking
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: deploy_jumpbox
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.HUB_RG }}
+        template: ./infra/aks-bicep/modules/firewall.bicep
+        parameters: >
+          ./infra/aks-bicep/action_params/firewall.parameters.json
+          location="${{ env.LOCATION }}"
+          hubVnetName="${{ env.HUB_VNET }}"
+          fwPrivateIP="${{ env.FW_PRIVATE_IP }}"
+        deploymentName: firewall-github-actions
+
+  user_defined_routing:
+    needs: deploy_firewall
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: create_route
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.SPOKE_RG }}
+        template: ./infra/aks-bicep/modules/routing_table.bicep
+        parameters: >
+          ./infra/aks-bicep/action_params/routing.parameters.json
+          location="${{ env.LOCATION }}"
+          fwPrivateIP="${{ env.FW_PRIVATE_IP }}"
+          routeTableName="${{ env.ROUTE_TABLE_NAME }}"
+        deploymentName: udr-github-actions
+    
+  spoke_networking:
+    needs: user_defined_routing
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: spoke networking
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.SPOKE_RG }}
+        template: ./infra/aks-bicep/modules/spoke_network.bicep
+        parameters: >
+          ./infra/aks-bicep/action_params/spoke_networking.parameters.json
+          spoke_rg="${{ env.SPOKE_RG }}"
+          location="${{ env.LOCATION }}"
+          spokeVnetName="${{ env.SPOKE_VNET }}"
+          routeTableName="${{ env.ROUTE_TABLE_NAME }}"
+        deploymentName: spoke-networking-github-actions
+
+  setup_peering:
+    needs: [hub_networking, spoke_networking]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: hub_peering
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.HUB_RG }}
+        template: ./infra/aks-bicep/modules/peering.bicep
+        parameters: >
+          localVnetName="${{ env.HUB_VNET }}"
+          remoteVnetName="${{ env.SPOKE_VNET }}"
+          rgToPeer="${{ env.SPOKE_RG }}"
+        deploymentName: hub-peering-github-actions
+    - name: spoke_peering
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.SPOKE_RG }}
+        template: ./infra/aks-bicep/modules/peering.bicep
+        parameters: >
+          localVnetName="${{ env.SPOKE_VNET }}" 
+          remoteVnetName="${{ env.HUB_VNET }}" 
+          rgToPeer="${{ env.HUB_RG }}"
+        deploymentName: spoke-peering-github-actions
+
+  deploy_bastion:
+    needs: hub_networking
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@main
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: deploy_bastion
+      uses: azure/arm-deploy@v1
+      with:
+        scope: resourcegroup
+        subscriptionId: ${{ env.AZURE_SUBSCRIPTION }}
+        resourceGroupName: ${{ env.HUB_RG }}
+        template: ./infra/aks-bicep/modules/bastion.bicep
+        parameters: >
+          ./infra/aks-bicep/action_params/bastion.parameters.json
+          location="${{ env.LOCATION }}"
+          hubVnetName="${{ env.HUB_VNET }}"
+        deploymentName: bastion-github-actions
+ 
+  build_java_aks_microsvr_app:
+    needs: setup_peering
+    runs-on: ubuntu-latest
+    steps:
+    - name: Build Java Application
+      uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+         java-version: '11'
+         distribution: 'microsoft'
+    - name: azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: deploy AKS
+      uses: azure/powershell@v1
+      with:
+         inlineScript: | 
+          az deployment group create -g ${{ env.SPOKE_RG }} -f ./src/main.bicep
+         azPSVersion: "latest"

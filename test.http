@@ -1,0 +1,25 @@
+
+@host=20.214.217.41
+###
+GET http://{{host}}/api/customer/owners
+
+
+###
+GET http://{{host}}/api/customer/owners/4
+
+###
+GET http://{{host}}/actuator
+
+###
+GET http://{{host}}/api/customer/owners/ 
+http://{{host}}/api/customer/petTypes
+http://{{host}}/api/customer/owners/3/pets/4
+http://{{host}}/api/customer/owners/6/pets/8/
+
+###
+http://{{host}}/api/vet/vets
+http://{{host}}/api/visit/owners/6/pets/8/visits
+http://{{host}}/api/visit/owners/6/pets/8/visits
+
+###
+GET http://{{host}}/api/visit/owners/6/pets/8/visits

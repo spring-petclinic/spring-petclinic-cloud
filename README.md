@@ -23,11 +23,15 @@ az deployment group create -g spring-cluster-rg  --template-uri https://github.c
 az aks get-credentials -n aks-spring-cluster -g spring-cluster-rg
 
 
-helm upgrade --install petapp ${petClinicHelmUri} -n spring-petclinic --set wavefrontApiKey="${wavefrontApiKey}"
+helm upgrade --install petapp ${petClinicHelmUri} -n spring-petclinic 
 
-
+# db -> PaaS
+<!-- 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
 helm install vets-db-mysql bitnami/mysql --namespace spring-petclinic --version 8 --set auth.database=service_instance_db
 helm install visits-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8 --set auth.database=service_instance_db
-helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8 --set auth.database=service_instance_db
+helm install customers-db-mysql bitnami/mysql --namespace spring-petclinic  --version 8 --set auth.database=service_instance_db -->
+
+## Tempate배포
+https://ms.portal.azure.com/#create/Microsoft.Template
