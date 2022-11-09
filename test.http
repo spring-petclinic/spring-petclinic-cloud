@@ -1,5 +1,5 @@
 
-@host=20.214.217.41
+@host=20.200.200.38
 ###
 GET http://{{host}}/api/customer/owners
 
