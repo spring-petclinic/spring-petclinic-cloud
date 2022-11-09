@@ -44,6 +44,16 @@ retentionInDays=30
 
 * <Kubernetes resources> > Create > Create a starter application
 
+* 샘플앱 살표보기
+
+```sh
+kubectl run busybox -i --tty --image=busybox --restart=Never --rm -- sh
+kubectl run curl --rm -i --tty --image=curlimages/curl -- sh
+kubectl logs <pod>
+kubectl describe po <pod>
+kubectl get po -o yaml
+```
+
 ## Spring Petclinic Microservice 코드
 
 * Configmap으로 Spring Config 주입
@@ -177,18 +187,100 @@ helm create spring-petclinic
 ## Helm Chart로 앱 배포
 
 ```sh
-cd charts 
+
 # helm upgrade --install <릴리즈명> <차트>
-helm upgrade --install petclinic-release petclinic --set image.tag=latest
+helm upgrade --install petclinic-release charts/petclinic --set image.tag=latest
 ```
 
+## API 테스트
 
+`test.http` 파일로 API테스트
 
+```sh
+kubectl run curl --rm -i --tty --image=curlimages/curl:7.73.0 -- sh
+	# curl http://customers-service.spring-petclinic.svc.cluster.local:8080/owners
+```
 
+## Azure KeyVault
 
-# db -> PaaS
+* KeyVault의 Secret을 사용하기 위해 [Kubernetes CSI(Container Storage Interface)](https://kubernetes-csi.github.io/docs/)를 사용함
 
+* AKS에서 CSI와 Managed ID를 활성화 시킴
 
+```bash
+export aks=spr-cluster
+export rg=gmkt-rg
+az aks enable-addons -a azure-keyvault-secrets-provider -n $aks -g $rg
+az aks update -n $aks -g $rg --enable-managed-identity
+```
 
-## Tempate배포
-https://ms.portal.azure.com/#create/Microsoft.Template
+* 클러스터에 `--enable-managed-identity`를 활성화하면 아래와 같이 objectId (Managed ID)를 얻을 수 있음.
+  
+```json
+ "identity": {
+        "clientId": "90e35a2c-3a2e-495a-88a6-9ca1cd5d710a",
+        "objectId": "668c37cb-ee54-44bf-bc42-03e420240b5d",
+        "resourceId": "/subscriptions/2f2d6dff-65ac-45fc-9180-bad1e786a763/resourcegroups/~~~~"
+     }
+```
+
+* KeyVault 서비스에 secret permission을 위 AKS managed ID에 할당함
+  
+```bash
+    az keyvault set-policy -n <your-keyvault> --secret-permissions get --object-id 668c37cb-ee54-44bf-bc42-03e420240b5d
+```
+
+* CSI Manifest 파일 [secretproviderclass](manifests/secretproviderclass.yml)을 수정.
+  * `userAssignedIdentityID`에 위 Managed ID의 `clientId`를 입력
+  * `tenantID`: 계정의 TenantID 입력
+    > `az account list` 로 확인
+
+    ```yaml
+    (생략)
+    ...
+    parameters:
+    usePodIdentity: "false"
+    useVMManagedIdentity: "true"
+    userAssignedIdentityID: "<clientId>"
+    keyvaultName: "<your-keyvault>"
+    cloudName: ""
+    objects:  |
+      array:
+        - |
+          objectName: mysql-url
+          objectType: secret                     
+          objectVersion: ""                    
+        - |
+          objectName: mysql-user
+          objectType: secret
+          objectVersion: ""
+        - |
+          objectName: mysql-pass
+          objectType: secret
+          objectVersion: "" 
+    tenantId: "<your-tenant-id>"
+    ```
+### Secret 저장
+
+```sh
+az keyvault secret set --vault-name <your-keyvault> --name mysql-url --value "jdbc:mysqlql://<your-mysql-name>.mysql.database.azure.com/petclinic?sslmode=verify-full&&sslfactory=org.mysqlql.ssl.SingleCertValidatingFactory&sslfactoryarg=classpath:BaltimoreCyberTrustRoot.crt.pem"
+
+    az keyvault secret set --vault-name <your-keyvault> --name mysql-user --value <user>@<your-mysql-name>
+
+    az keyvault secret set --vault-name <your-keyvault> --name mysql-pass --value <password>
+```
+
+## Azure Database for mySQL
+Flexible db로 생성
+
+`service_instance_db` DB생성. 마이크로서비스 별로 DB분리
+
+az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name visits_db
+az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name vets_db
+az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name customers_db
+
+              
+
+## Application Insights
+
+## Application Gateway

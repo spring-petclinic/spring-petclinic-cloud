@@ -10,8 +10,12 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: latest
 
+
 imagePullSecrets: 
   - name: regcred
+
+volumes: {}
+volumeMounts: {}
 
 env:
   - name: SPRING_PROFILES_ACTIVE

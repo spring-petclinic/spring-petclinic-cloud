@@ -3,7 +3,6 @@ vets:
     repository: springpetacr.azurecr.io/petclinic/spring-petclinic-vets-service
     tag: latest
  
-
 customers:
   image:
     repository: springpetacr.azurecr.io/petclinic/spring-petclinic-customers-service
