@@ -39,9 +39,10 @@ spec:
               command: ["sh", "-c", "sleep 10"]
         resources:
           limits:
+            cpu: 1000m
             memory: 1Gi
           requests:
-            cpu: 2000m
+            cpu: 500m
             memory: 1Gi
         env:
         - name: SPRING_PROFILES_ACTIVE
@@ -61,7 +62,6 @@ spec:
           value: c91aa53f-77a3-4009-b9f0-2c8a1f513596s  
         ports:
         - containerPort: 8080
-        resources: {}
       restartPolicy: Always
       imagePullSecrets:
         - name: regcred

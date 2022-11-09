@@ -36,4 +36,4 @@ spring:
 management:
   endpoint:
     restart:
-      enabled: true
+      enabled: false
