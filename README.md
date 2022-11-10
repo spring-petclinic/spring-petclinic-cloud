@@ -20,6 +20,7 @@ Non-prod 환경은 개발계과 스테이지계로 구성되어 있습니다.
 | ---------- | ------------------------------- | ----|
 | Endpoint | Load Balancer | Application Gateway |
 | Persistence  | K8S Statefulset | Azure Database for MySQL |
+| 구성정보  | K8S ConfigMap | Azure App Configuration |
 | 기밀정보  | K8S secret | Azure KeyVault |
 | Monitoring | 없음 | Application Insight |
 | Namespace | spring-petclinic | spring-petclinic-stage |
@@ -82,14 +83,14 @@ kubectl get po -o yaml
 mvn clean package -DskipTests 
 
 export REPOSITORY_PREFIX=<your-registry>.azurecr.io/petclinic
-cd spring-petclinic-customers-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-customers-service . && cd ../
-cd spring-petclinic-vets-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-vets-service . && cd ../
-cd spring-petclinic-visits-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-visits-service . && cd ../
-cd spring-petclinic-api-gateway && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-api-gateway . && cd ../
+cd spring-petclinic-customers-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-cloud-customers-service . && cd .. 
+cd spring-petclinic-vets-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-cloud-vets-service . && cd .. 
+cd spring-petclinic-visits-service && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service . && cd .. 
+cd spring-petclinic-api-gateway && docker build -t ${REPOSITORY_PREFIX}/spring-petclinic-cloud-api-gateway . && cd .. 
 
 ```
 
-혹은
+혹은 (시간 많이 걸림)
   
 ```bash
 export REPOSITORY_PREFIX=<your-registry>.azurecr.io/petclinic
@@ -101,10 +102,10 @@ mvn spring-boot:build-image -DREPOSITORY_PREFIX=${REPOSITORY_PREFIX} -DskipTests
 ```bash
 az acr login --name <your-regtistry>
 
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-customers-service:latest
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-vets-service:latest
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-visits-service:latest
-docker push ${REPOSITORY_PREFIX}/spring-petclinic-api-gateway:latest
+docker push ${REPOSITORY_PREFIX}/spring-petclinic-cloud-customers-service:latest
+docker push ${REPOSITORY_PREFIX}/spring-petclinic-cloud-vets-service:latest
+docker push ${REPOSITORY_PREFIX}/spring-petclinic-cloud-visits-service:latest
+docker push ${REPOSITORY_PREFIX}/spring-petclinic-cloud-api-gateway:latest
 ```
 
 ## Kuberentes 
@@ -212,7 +213,9 @@ helm upgrade --install petclinic-release charts/petclinic --set image.tag=latest
 
 ```sh
 # helm upgrade --install <릴리즈명> <차트> <환경별 구성정보>
-helm upgrade --install petclinic-prod-release charts/petclinic -f charts/petclinic/values.yaml -f charts/petclinic/values-prod.yaml
+kubectl create ns spring-petclinic-stage
+ns spring-petclinic-stage
+helm upgrade --install petclinic-stage charts/petclinic -f charts/petclinic/values.yaml -f charts/petclinic/values-stage.yaml
 ```
 
 ## API 테스트
@@ -319,3 +322,26 @@ pom.xml에 아래 설정 추가
 </dependency>
 ```
 ## Application Gateway
+
+AGIC Addon
+```sh
+appgwId=$(az network application-gateway show -n <application-gateway-name> -g <resource-group-name> -o tsv --query "id") 
+az aks enable-addons -n <AKS-cluster-name> -g <AKS-cluster-resource-group> -a ingress-appgw --appgw-id $appgwId
+```
+
+address1=$(az network nic show --name myNic1 --resource-group myResourceGroupAG | grep "\"privateIpAddress\":" | grep -oE '[^ ]+$' | tr -d '",')
+address2=$(az network nic show --name myNic2 --resource-group myResourceGroupAG | grep "\"privateIpAddress\":" | grep -oE '[^ ]+$' | tr -d '",')
+az network application-gateway create \
+  --name myAppGateway \
+  --location eastus \
+  --resource-group myResourceGroupAG \
+  --capacity 2 \
+  --sku Standard_v2 \
+  --public-ip-address myAGPublicIPAddress \
+  --vnet-name myVNet \
+  --subnet myAGSubnet \
+  --servers "$address1" "$address2" \
+  --priority 100
+
+  ## Azure AppConfiguration 설정
+  

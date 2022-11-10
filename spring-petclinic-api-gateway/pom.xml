@@ -38,6 +38,12 @@
 	</properties>
 
     <dependencies>
+		<!-- Azure App Config -->
+        <dependency>
+            <groupId>com.azure.spring</groupId>
+            <artifactId>azure-spring-cloud-appconfiguration-config</artifactId>
+            <version>2.6.0</version>
+        </dependency>
         <!-- App Insight -->
         <dependency>
             <groupId>com.microsoft.azure</groupId>

@@ -3,7 +3,6 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: petclinic-config
-  namespace: spring-petclinic
 data:
   application.yaml: |-
     server:
