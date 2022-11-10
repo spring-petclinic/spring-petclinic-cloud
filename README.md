@@ -1,5 +1,8 @@
 # Spring Microservice Petclinic on AKS
 
+## 참고
+
+본 README는 강사의 주도에 따라 진행될 수 있도록 구성되었습니다. Self pace로 진행하기에 충분하지 않을 수 있습니다.
 ## 필요도구
 * git
 * Github 계정 (or Azure DevOps 계정)
@@ -7,6 +10,19 @@
 * kubectl
 * helm 
 * mvn
+
+## 목표 아키텍처
+
+마이크로서비스로 구성된 Spring Petclinic 앱을 배포하기 위해 Non-prod 클러스터 환경을 구성합니다. 
+Non-prod 환경은 개발계과 스테이지계로 구성되어 있습니다. 
+
+| 구분    | 개발계                         | 스테이지계 |
+| ---------- | ------------------------------- | ----|
+| Endpoint | Load Balancer | Application Gateway |
+| Persistence  | K8S Statefulset | Azure Database for MySQL |
+| 기밀정보  | K8S secret | Azure KeyVault |
+| Monitoring | 없음 | Application Insight |
+| Namespace | spring-petclinic | spring-petclinic-stage |
 
 ## Infrastructure Provisioning
 
@@ -186,10 +202,17 @@ helm create spring-petclinic
 
 ## Helm Chart로 앱 배포
 
-```sh
+### 개발계
 
+```sh
 # helm upgrade --install <릴리즈명> <차트>
 helm upgrade --install petclinic-release charts/petclinic --set image.tag=latest
+```
+### 스테이지계
+
+```sh
+# helm upgrade --install <릴리즈명> <차트> <환경별 구성정보>
+helm upgrade --install petclinic-prod-release charts/petclinic -f charts/petclinic/values.yaml -f charts/petclinic/values-prod.yaml
 ```
 
 ## API 테스트
@@ -200,7 +223,7 @@ helm upgrade --install petclinic-release charts/petclinic --set image.tag=latest
 kubectl run curl --rm -i --tty --image=curlimages/curl:7.73.0 -- sh
 	# curl http://customers-service.spring-petclinic.svc.cluster.local:8080/owners
 ```
-
+## 아래 구성부터 Stage환경에만 적용
 ## Azure KeyVault
 
 * KeyVault의 Secret을 사용하기 위해 [Kubernetes CSI(Container Storage Interface)](https://kubernetes-csi.github.io/docs/)를 사용함
@@ -260,14 +283,15 @@ az aks update -n $aks -g $rg --enable-managed-identity
           objectVersion: "" 
     tenantId: "<your-tenant-id>"
     ```
+
 ### Secret 저장
 
 ```sh
 az keyvault secret set --vault-name <your-keyvault> --name mysql-url --value "jdbc:mysqlql://<your-mysql-name>.mysql.database.azure.com/petclinic?sslmode=verify-full&&sslfactory=org.mysqlql.ssl.SingleCertValidatingFactory&sslfactoryarg=classpath:BaltimoreCyberTrustRoot.crt.pem"
 
-    az keyvault secret set --vault-name <your-keyvault> --name mysql-user --value <user>@<your-mysql-name>
+az keyvault secret set --vault-name <your-keyvault> --name mysql-user --value <user>@<your-mysql-name>
 
-    az keyvault secret set --vault-name <your-keyvault> --name mysql-pass --value <password>
+az keyvault secret set --vault-name <your-keyvault> --name mysql-pass --value <password>
 ```
 
 ## Azure Database for mySQL
@@ -275,12 +299,23 @@ Flexible db로 생성
 
 `service_instance_db` DB생성. 마이크로서비스 별로 DB분리
 
+```sh
 az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name visits_db
 az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name vets_db
 az mysql flexible-server db create --resource-group gmkt-rg --server-name mysqlandy --database-name customers_db
-
-              
-
+```
 ## Application Insights
+Application Insights > Create. Resource Mode를 `Workspace-base`로 설정
+`Instrumentation Key` 필요
 
+pom.xml에 아래 설정 추가
+
+```xml
+<!-- App Insight -->
+<dependency>
+    <groupId>com.microsoft.azure</groupId>
+    <artifactId>applicationinsights-runtime-attach</artifactId>
+    <version>${appcliation-insights.version}</version>
+</dependency>
+```
 ## Application Gateway

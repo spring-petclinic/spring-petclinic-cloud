@@ -28,7 +28,7 @@ env:
   - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
     value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
   - name: APPINSIGHTS_INSTRUMENTATIONKEY
-    value: c91aa53f-77a3-4009-b9f0-2c8a1f513596  
+    value: ""
 
 nameOverride: "visits-service"
 fullnameOverride: "visits-service"

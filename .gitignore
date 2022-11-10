@@ -19,4 +19,5 @@ generated/
 .DS_Store
 .vscode/settings.json
 
-.log.md
+.*.md
+.*.yaml
