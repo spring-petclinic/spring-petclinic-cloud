@@ -1,21 +1,21 @@
 vets:
   image:
-    repository: springpetacr.azurecr.io/petclinic/spring-petclinic-cloud-vets-service
+    repository: spreg.azurecr.io/petclinic/spring-petclinic-cloud-vets-service
     tag: latest
  
 customers:
   image:
-    repository: springpetacr.azurecr.io/petclinic/spring-petclinic-cloud-customers-service
+    repository: spreg.azurecr.io/petclinic/spring-petclinic-cloud-customers-service
     tag: latest 
 
 visits:
   image:
-    repository: springpetacr.azurecr.io/petclinic/spring-petclinic-cloud-visits-service
+    repository: spreg.azurecr.io/petclinic/spring-petclinic-cloud-visits-service
     tag: latest
 
 api-gateway:
   image:
-    repository: springpetacr.azurecr.io/petclinic/spring-petclinic-cloud-api-gateway
+    repository: spreg.azurecr.io/petclinic/spring-petclinic-cloud-api-gateway
     tag: latest
   resources: 
     limits:
@@ -23,3 +23,4 @@ api-gateway:
     requests:
       cpu: 1000m
       memory: 1Gi  
+  

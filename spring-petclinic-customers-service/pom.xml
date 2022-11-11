@@ -240,7 +240,10 @@
 
 
 		<profile>
-			<id>k8s</id>	        
+			<id>k8s</id>	
+			<activation>
+	            <activeByDefault>true</activeByDefault>
+	        </activation>        
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework.cloud</groupId>

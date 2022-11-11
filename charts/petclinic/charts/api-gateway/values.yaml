@@ -17,7 +17,9 @@ env:
   - name: SPRING_PROFILES_ACTIVE
     value: kubernetes
   - name: MANAGEMENT_METRICS_EXPORT_WAVEFRONT_URI
-    value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878
+    value: proxy://wavefront-proxy.spring-petclinic.svc.cluster.local:2878    
+  - name: APPINSIGHTS_INSTRUMENTATIONKEY
+    value: "" 
 
 nameOverride: api-gateway
 fullnameOverride: api-gateway

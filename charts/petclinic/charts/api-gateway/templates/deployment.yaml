@@ -39,10 +39,12 @@ spec:
             httpGet:
               path: /actuator/health/readiness/
               port: 8080
+            initialDelaySeconds: 90
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
+            initialDelaySeconds: 15
           env: 
             {{- toYaml .Values.env | nindent 12}}    
           resources:

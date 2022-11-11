@@ -27,6 +27,9 @@ spring:
       config:
         enabled: true
         name: petclinic-config
+    azure:
+      appconfiguration:
+        enabled: false    
 management:
   endpoint:
     restart:
@@ -68,7 +71,7 @@ spring:
         stores:
           - connection-string: "Endpoint=https://springappconfig.azconfig.io;Id=urfc-lq-s0:hv6xtBHrPOMfbk72GhD0;Secret=ZFZIiP2w44M8R8lTXTiYPQ7woXltzwhwfCIEv3yw7Kg="
             selects:
-              - label-filter: 'stage'
+              - label-filter: ',${spring.profiles.active}'
   
 management:
   endpoint:

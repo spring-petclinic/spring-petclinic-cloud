@@ -23,7 +23,7 @@ customers:
       secretKeyRef:
         name: dbsecret
         key: mysql-pass  
-  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+  - name: APPINSIGHTS_INSTRUMENTATIONKEY
     value: "f8c35d3c-98fe-48c5-9a42-a3317930260a"  
   - name: SPRING_PROFILES_ACTIVE         
     value: "stage" 
@@ -42,7 +42,7 @@ vets:
     readOnly: true
   env:
   - name: SPRING_DATASOURCE_URL
-    value: jdbc:mysql://mysqlandy.mysql.database.azure.com:3306/vets_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=vets-db&useSSL=true&serverSslCert=classpath:BaltimoreCyberTrustRoot.crt.pem
+    value: jdbc:mysql://mysqlandy.mysql.database.azure.com:3306/service_instance_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=vets-db&useSSL=true&serverSslCert=classpath:BaltimoreCyberTrustRoot.crt.pem
   - name: SPRING_DATASOURCE_USERNAME
     valueFrom:
       secretKeyRef:
@@ -53,7 +53,7 @@ vets:
       secretKeyRef:
         name: dbsecret
         key: mysql-pass  
-  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+  - name: APPINSIGHTS_INSTRUMENTATIONKEY
     value: "f8c35d3c-98fe-48c5-9a42-a3317930260a"
   - name: SPRING_PROFILES_ACTIVE         
     value: "stage" 
@@ -72,7 +72,7 @@ visits:
     readOnly: true
   env:
   - name: SPRING_DATASOURCE_URL
-    value: jdbc:mysql://mysqlandy.mysql.database.azure.com:3306/visits_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=visits-db&useSSL=true&serverSslCert=classpath:BaltimoreCyberTrustRoot.crt.pem
+    value: jdbc:mysql://mysqlandy.mysql.database.azure.com:3306/service_instance_db?queryInterceptors=brave.mysql8.TracingQueryInterceptor&exceptionInterceptors=brave.mysql8.TracingExceptionInterceptor&zipkinServiceName=visits-db&useSSL=true&serverSslCert=classpath:BaltimoreCyberTrustRoot.crt.pem
   - name: SPRING_DATASOURCE_USERNAME
     valueFrom:
       secretKeyRef:
@@ -83,7 +83,7 @@ visits:
       secretKeyRef:
         name: dbsecret
         key: mysql-pass  
-  - name: APPLICATIONINSIGHTS_CONNECTION_STRING
+  - name: APPINSIGHTS_INSTRUMENTATIONKEY
     value: "f8c35d3c-98fe-48c5-9a42-a3317930260a"    
   - name: SPRING_PROFILES_ACTIVE         
     value: "stage"

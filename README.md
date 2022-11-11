@@ -137,7 +137,9 @@ Helm Chart내 Template에 정의되어 있음. (설명 필요)
 
 ## K8S 샘플 manifests파일 설명
 
+
 ### Container Registry ID생성
+외부 ACR을 연결할때만 필요, AKS와 Attach했으면 필요없음.
 
 > https://learn.microsoft.com/en-us/azure/container-registry/container-registry-auth-kubernetes
 
@@ -149,8 +151,8 @@ Helm Chart내 Template에 정의되어 있음. (설명 필요)
 # ACR_NAME: The name of your Azure Container Registry
 # SERVICE_PRINCIPAL_NAME: Must be unique within your AD tenant
 
-export containerRegistry=springpetacr
-export servicePrincipal=springpetacrsp
+export containerRegistry=spreg
+export servicePrincipal=spregsp
 
 ACR_NAME=$containerRegistry
 SERVICE_PRINCIPAL_NAME=$servicePrincipal
@@ -177,6 +179,9 @@ echo "Service principal password: $PASSWORD"
 ```
 
 ## ACR접속위한 secret생성
+외부 ACR을 연결할때만 필요, AKS와 Attach했으면 필요없음.
+
+```bash
 ```bash
  kubectl create secret docker-registry regcred \
     --namespace spring-petclinic \
@@ -344,4 +349,3 @@ az network application-gateway create \
   --priority 100
 
   ## Azure AppConfiguration 설정
-  

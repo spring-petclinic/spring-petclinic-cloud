@@ -27,6 +27,9 @@ spring:
       config:
         enabled: true
         name: petclinic-config
+    azure:
+      appconfiguration:
+        enabled: false    
 management:
   endpoint:
     restart:
