@@ -328,24 +328,15 @@ pom.xml에 아래 설정 추가
 ```
 ## Application Gateway
 
-AGIC Addon
-```sh
-appgwId=$(az network application-gateway show -n <application-gateway-name> -g <resource-group-name> -o tsv --query "id") 
-az aks enable-addons -n <AKS-cluster-name> -g <AKS-cluster-resource-group> -a ingress-appgw --appgw-id $appgwId
+### Application Gateway 생성
+
+<your-kubernets> > Settings> Networking > Application Gateway ingress controller Enable ingress controller > 신규로 생성
+
+### Ingress 생성
+
+스테이지 환경만 Ingress생성 및 Application Gateway 연결
+
+```yaml
+
 ```
-
-address1=$(az network nic show --name myNic1 --resource-group myResourceGroupAG | grep "\"privateIpAddress\":" | grep -oE '[^ ]+$' | tr -d '",')
-address2=$(az network nic show --name myNic2 --resource-group myResourceGroupAG | grep "\"privateIpAddress\":" | grep -oE '[^ ]+$' | tr -d '",')
-az network application-gateway create \
-  --name myAppGateway \
-  --location eastus \
-  --resource-group myResourceGroupAG \
-  --capacity 2 \
-  --sku Standard_v2 \
-  --public-ip-address myAGPublicIPAddress \
-  --vnet-name myVNet \
-  --subnet myAGSubnet \
-  --servers "$address1" "$address2" \
-  --priority 100
-
   ## Azure AppConfiguration 설정
