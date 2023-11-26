@@ -2,7 +2,7 @@ name: Run Tests
 
 on:
   workflow_run:
-    workflows: ["Java CI with Maven"]
+    workflows: ["maven build"]
     types:
       - completed
 
