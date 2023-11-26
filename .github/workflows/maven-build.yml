@@ -1,12 +1,10 @@
 name: maven build
 
 on:
-  push:
-    branches:
-      - '*'
-  pull_request:
-    branches:
-      - '*'
+ push:
+    branches: [ master ]
+ pull_request:
+    branches: [ master ]
 jobs:
   build:
 
