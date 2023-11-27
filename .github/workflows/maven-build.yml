@@ -24,4 +24,4 @@ jobs:
       run: mvn -B package --file pom.xml
  
     - name: Test with Maven
-      run: mvn -B package --file pom.xml --DskipTest
+      run: mvn -B test
