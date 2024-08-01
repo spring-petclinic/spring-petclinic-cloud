@@ -27,7 +27,7 @@
 
 		<maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
 
-		<webjars-bootstrap.version>3.4.0</webjars-bootstrap.version>
+		<webjars-bootstrap.version>5.0.0</webjars-bootstrap.version>
 		<webjars-jquery-ui.version>1.11.4</webjars-jquery-ui.version>
 		<webjars-jquery.version>3.1.1-1</webjars-jquery.version>
 		<webjars-angular.version>1.6.4</webjars-angular.version>
