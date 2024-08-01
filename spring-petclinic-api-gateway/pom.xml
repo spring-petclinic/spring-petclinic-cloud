@@ -32,6 +32,7 @@
 		<webjars-jquery.version>3.1.1-1</webjars-jquery.version>
 		<webjars-angular.version>1.6.4</webjars-angular.version>
 		<webjars-angular-ui-router.version>1.0.3</webjars-angular-ui-router.version>
+		<!-- Any bootstrap version upgrade must be reported in the wro4j.xml file -->
 		<wro4j.version>1.8.0</wro4j.version>
         <spring-boot.build-image.imageName>${REPOSITORY_PREFIX}/spring-petclinic-cloud-api-gateway</spring-boot.build-image.imageName>
 
